@@ -1,4 +1,5 @@
-# Dewakoding Presensi
+# Presensi LPSPL Sorong
+Create By : Rahal Marsha Bala'zam
 ## Langkah-langkah Instalasi
 
 1. **Extract File Zip**
