@@ -34,6 +34,7 @@ class ScheduleResource extends Resource
                                 Forms\Components\Toggle::make('is_banned'),
                                 Forms\Components\Select::make('user_id')
                                     ->relationship('user', 'name')
+                                    ->preload()
                                     ->searchable()
                                     ->required(),
                                 Forms\Components\Select::make('shift_id')
