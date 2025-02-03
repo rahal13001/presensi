@@ -2,17 +2,18 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\UserResource\Pages;
-use App\Filament\Resources\UserResource\RelationManagers;
-use App\Models\User;
 use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
+use App\Models\User;
 use Filament\Tables;
+use Filament\Forms\Form;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Resources\Resource;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Database\Eloquent\Builder;
+use App\Filament\Resources\UserResource\Pages;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Resources\UserResource\RelationManagers;
 
 class UserResource extends Resource
 {
@@ -41,6 +42,17 @@ class UserResource extends Resource
                                 Forms\Components\Select::make('roles')
                                     ->relationship('roles', 'name')
                                     ->preload()
+                                    ->options(function () {
+                                        $user = Auth::user();
+                                
+                                        // If the user is NOT a super admin, remove "super_admin" from options
+                                        if (!$user->hasRole('super_admin')) {
+                                            return \Spatie\Permission\Models\Role::where('name', '!=', 'super_admin')->pluck('name', 'name');
+                                        }
+                                
+                                        // If user is super admin, show all roles
+                                        return \Spatie\Permission\Models\Role::pluck('name', 'name');
+                                    })
                                     ->searchable(),
                                 Forms\Components\FileUpload::make('image')
                             ])
