@@ -92,6 +92,9 @@ class UserResource extends Resource
                     ->sortable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('roles.name')
+                    ->formatStateUsing(fn ($state) => 
+                        ($state === 'super_admin' && !Auth::user()->hasRole('super_admin')) ? 'user' : $state
+                        )
                     ->searchable(),
                 Tables\Columns\TextColumn::make('position.position_name')
                     ->label('Jabatan')
