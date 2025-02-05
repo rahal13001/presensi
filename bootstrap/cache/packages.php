@@ -123,6 +123,17 @@
       0 => 'Humaidem\\FilamentMapPicker\\FilamentMapPickerServiceProvider',
     ),
   ),
+  'jeffgreco13/filament-breezy' => 
+  array (
+    'aliases' => 
+    array (
+      'FilamentBreezy' => 'Jeffgreco13\\FilamentBreezy\\Facades\\FilamentBreezy',
+    ),
+    'providers' => 
+    array (
+      0 => 'Jeffgreco13\\FilamentBreezy\\FilamentBreezyServiceProvider',
+    ),
+  ),
   'kirschbaum-development/eloquent-power-joins' => 
   array (
     'providers' => 
