@@ -57,7 +57,7 @@ class MostLateEmployees extends BaseWidget
                 ->searchable(),
 
             Tables\Columns\TextColumn::make('total_late_minutes')
-                ->label('Total (Menit)')
+                ->label('Total')
                 ->sortable()
                 ->numeric()
                 ->formatStateUsing(fn ($state) => floor($state / 60) . ' Jam ' . ($state % 60) . ' Menit'),

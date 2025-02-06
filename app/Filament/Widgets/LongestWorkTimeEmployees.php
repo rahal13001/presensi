@@ -52,12 +52,12 @@ class LongestWorkTimeEmployees extends BaseWidget
         ])
         ->columns([
             Tables\Columns\TextColumn::make('user.name')
-                ->label('Employee Name')
+                ->label('Nama')
                 ->sortable()
                 ->searchable(),
 
             Tables\Columns\TextColumn::make('total_work_minutes')
-                ->label('Total Work Time')
+                ->label('Total')
                 ->sortable()
                 ->numeric()
                 ->formatStateUsing(fn ($state) => floor($state / 60) . ' Jam ' . ($state % 60) . ' Menit'),
