@@ -3,13 +3,15 @@
 namespace App\Providers;
 
 
-use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 use Dedoc\Scramble\Scramble;
 use Illuminate\Routing\Route;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\ServiceProvider;
+use Filament\Support\Facades\FilamentColor;
+use Filament\Support\Colors\Color;
 use Dedoc\Scramble\Support\Generator\OpenApi;
 use Dedoc\Scramble\Support\Generator\SecurityScheme;
-use Illuminate\Support\Facades\Gate;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -26,6 +28,17 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+
+        FilamentColor::register([
+            'danger' => Color::Red,
+            'gray' => Color::Zinc,
+            'info' => Color::Blue,
+            'primary' => Color::Amber,
+            'success' => Color::Green,
+            'warning' => Color::Hex('#FFD700'),
+            'brown' => Color::Hex('#8B4513'),
+        ]);
+        
         Scramble::routes(function (Route $route) {
             return Str::startsWith($route->uri, 'api/');
         });

@@ -53,7 +53,13 @@ class AttendanceResource extends Resource
                 Forms\Components\TextInput::make('start_longitude')
                     ->required()
                     ->numeric(),
+                Forms\Components\DateTimePicker::make('created_at')
+                    ->label('Tanggal Masuk')
+                    ->required(),
                 Forms\Components\TextInput::make('start_time')
+                    ->required(),
+                Forms\Components\DateTimePicker::make('updated_at')
+                    ->label('Tanggal Pulang')
                     ->required(),
                 Forms\Components\TextInput::make('end_time')
                     ->required(),
@@ -61,6 +67,8 @@ class AttendanceResource extends Resource
                     ->numeric(),
                 Forms\Components\TextInput::make('end_longitude')
                     ->numeric(),
+                Forms\Components\Toggle::make('psw')
+                    ->label('PSW'),
             ]);
     }
 

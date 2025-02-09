@@ -25,7 +25,7 @@ class Shiftpresensi extends Component
         $this->shiftschedules = Shiftschedule::with('shift','office')->get();
 
         $user = Auth::user();
-        if($user->hasRole('super_admin') || $user->hasRole('admin') || $user->hasRole('kepala')) {
+        if(!$user->hasRole('user')) {
             return;
         }
         

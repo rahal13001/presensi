@@ -21,7 +21,7 @@ class Presensi extends Component
 
         
         $user = Auth::user();
-        if($user->hasRole('super_admin') || $user->hasRole('admin') || $user->hasRole('kepala')) {
+        if(!$user->hasRole('user')) {
             return;
         }
 

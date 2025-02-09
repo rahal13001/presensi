@@ -23,6 +23,7 @@ class DailyreportsRelationManager extends RelationManager
         return $form
             ->schema([
                 Forms\Components\TextInput::make('title')
+                    ->label('Judul')
                     ->required()
                     ->columnSpan('full')
                     ->maxLength(255),
@@ -31,6 +32,13 @@ class DailyreportsRelationManager extends RelationManager
                     ->label('Deskripsi')
                     ->columnSpan('full')
                     ->profile('simple'),
+                Forms\Components\Textarea::make('output')
+                    ->label('Output')
+                    ->required()
+                    ->columnSpan('full'),
+                Forms\Components\Textarea::make('note')
+                    ->label('Keterangan')
+                    ->columnSpan('full'),
                 FileUpload::make('dokumentasi1')
                     ->required()
                     ->label('Dokumentasi 1')

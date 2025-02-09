@@ -8,6 +8,7 @@ use Filament\Widgets;
 use Filament\PanelProvider;
 use App\Filament\Pages\Auth\Login;
 use App\Filament\Pages\Dashboard;
+use App\Livewire\UpdateIdNumberComponent;
 use Filament\Support\Colors\Color;
 use Filament\Http\Middleware\Authenticate;
 use Jeffgreco13\FilamentBreezy\BreezyCore;
@@ -68,6 +69,9 @@ class AdminPanelProvider extends PanelProvider
                     hasAvatars: false, // Enables the avatar upload form component (default = false)
                     slug: 'my-profile' // Sets the slug for the profile page (default = 'my-profile')
                 )
+                ->myProfileComponents([
+                    UpdateIdNumberComponent::class
+                    ])
             ])
             ->viteTheme('resources/css/filament/admin/theme.css')
             ->navigationGroups([

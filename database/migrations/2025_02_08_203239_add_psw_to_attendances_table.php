@@ -11,9 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('dailyreports', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
+        Schema::table('attendances', function (Blueprint $table) {
+            $table->boolean('psw')->default(false)->nullable();
         });
     }
 
@@ -22,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('dailyreports');
+        Schema::table('attendances', function (Blueprint $table) {
+            //
+        });
     }
 };

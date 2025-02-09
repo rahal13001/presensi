@@ -20,8 +20,8 @@ return new class extends Migration
             $table->time('schedule_end_time');
             $table->double('latitude');
             $table->double('longitude');
-            $table->time('start_time');
-            $table->time('end_time');
+            $table->time('start_time')->nullable();
+            $table->time('end_time')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

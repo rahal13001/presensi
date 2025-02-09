@@ -13,6 +13,18 @@
       'EloquentSerialize' => 'AnourValar\\EloquentSerialize\\Facades\\EloquentSerializeFacade',
     ),
   ),
+  'barryvdh/laravel-dompdf' => 
+  array (
+    'aliases' => 
+    array (
+      'PDF' => 'Barryvdh\\DomPDF\\Facade\\Pdf',
+      'Pdf' => 'Barryvdh\\DomPDF\\Facade\\Pdf',
+    ),
+    'providers' => 
+    array (
+      0 => 'Barryvdh\\DomPDF\\ServiceProvider',
+    ),
+  ),
   'bezhansalleh/filament-shield' => 
   array (
     'aliases' => 
@@ -214,6 +226,17 @@
     'providers' => 
     array (
       0 => 'RyanChandler\\BladeCaptureDirective\\BladeCaptureDirectiveServiceProvider',
+    ),
+  ),
+  'saade/filament-autograph' => 
+  array (
+    'aliases' => 
+    array (
+      'FilamentAutograph' => 'Saade\\FilamentAutograph\\Facades\\FilamentAutograph',
+    ),
+    'providers' => 
+    array (
+      0 => 'Saade\\FilamentAutograph\\FilamentAutographServiceProvider',
     ),
   ),
   'spatie/laravel-permission' => 

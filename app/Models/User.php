@@ -3,13 +3,14 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
-use Spatie\Permission\Traits\HasRoles;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Support\Facades\Crypt;
+use Spatie\Permission\Traits\HasRoles;
+use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class User extends Authenticatable
 {
@@ -25,7 +26,8 @@ class User extends Authenticatable
         'email',
         'password',
         'position_id',
-        'image'
+        'image',
+        'idnumber'
     ];
 
     /**
@@ -64,5 +66,17 @@ class User extends Authenticatable
     public function position(): BelongsTo
     {
         return $this->belongsTo(Position::class);
+    }
+
+     // Encrypt the ID number before saving it to the database
+    public function setIdNumberAttribute($value)
+    {
+        $this->attributes['idnumber'] = Crypt::encryptString($value);
+    }
+    
+        // Decrypt the ID number when accessing it
+    public function getIdNumberAttribute($value)
+    {
+        return is_null($value) ? null : Crypt::decryptString($value);
     }
 }

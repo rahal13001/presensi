@@ -11,6 +11,7 @@ use App\Models\Leave;
 class Attendance extends Model
 {
     use HasFactory;
+    use \Znck\Eloquent\Traits\BelongsToThrough;
 
     protected $fillable = [
         'user_id',
@@ -26,7 +27,8 @@ class Attendance extends Model
         'end_time',
         'is_leave',
         'start_accuracy',
-        'end_accuracy'
+        'end_accuracy',
+        'psw'
       
     ];
     public function user(): BelongsTo
@@ -37,6 +39,11 @@ class Attendance extends Model
     public function dailyreports()
     {
         return $this->hasMany(Dailyreport::class);
+    }
+
+    public function position(): \Znck\Eloquent\Relations\BelongsToThrough
+    {
+        return $this->belongsToThrough(Position::class, User::class);
     }
 
     public function isLate()

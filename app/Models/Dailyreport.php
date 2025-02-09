@@ -9,6 +9,8 @@ class Dailyreport extends Model
     protected $fillable = [
         'title',
         'description',
+        'output',
+        'note',
         'dokumentasi1',
         'dokumentasi2',
         'attendance_id',

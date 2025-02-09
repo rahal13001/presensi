@@ -33,12 +33,18 @@ class LeaveResource extends Resource
                         ->required(),
                     Forms\Components\DatePicker::make('end_date')
                         ->required(),
+                    Forms\Components\Select::make('typeofleave_id')
+                        ->label('Jenis Cuti')
+                        ->relationship('typeofleave', 'leaves_name')
+                        ->searchable()
+                        ->preload()
+                        ->required(),
                     Forms\Components\Textarea::make('reason')
                         ->columnSpanFull(),
                 ]),
         ];
     
-        if (Auth::user()->hasRole('super_admin')) {
+        if (Auth::user()->hasRole('super_admin') || Auth::user()->hasRole('admin')) {
             $schema[] = Forms\Components\Section::make('Approval')
                 ->schema([
                     Forms\Components\Select::make('status')
@@ -131,5 +137,17 @@ class LeaveResource extends Resource
             'create' => Pages\CreateLeave::route('/create'),
             'edit' => Pages\EditLeave::route('/{record}/edit'),
         ];
+    }
+
+    public static function getLabel(): ?string
+    {
+        $locale = app()->getLocale();
+        if ($locale === 'id') {
+            return "Cuti";
+        }
+        else
+        {
+            return "Leaves";
+        }
     }
 }
