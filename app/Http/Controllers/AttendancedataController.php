@@ -95,13 +95,13 @@ class AttendancedataController extends Controller
 
        
 
-        // if ($attendances->isEmpty()) {
-        //     return back()->with('error', 'Tidak ada data presensi untuk bulan ini.');
-        // }
+        if ($attendances->isEmpty()) {
+            return back()->with('error', 'Tidak ada data presensi untuk bulan ini.');
+        }
         
 
 
         $pdf = Pdf::loadView('pdf.datapresensi', compact('attendances', 'monthlyreport', 'team'));
-                return $pdf->setPaper('a4', 'landscape')->download('Data_Presensi_' . $monthlyreport->user->name . '..pdf');
+                return $pdf->setPaper('a4', 'landscape')->stream('Data_Presensi_' . $monthlyreport->user->name . '..pdf');
     }
 }

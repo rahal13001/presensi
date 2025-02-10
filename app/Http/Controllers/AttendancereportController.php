@@ -96,12 +96,12 @@ class AttendancereportController extends Controller
         $team = Team::where('user_id', $monthlyreport->user_id)->with('user')->first();
        
 
-        // if ($attendances->isEmpty()) {
-        //     return back()->with('error', 'Tidak ada data presensi untuk bulan ini.');
-        // }       
+        if ($attendances->isEmpty()) {
+            return back()->with('error', 'Tidak ada data presensi untuk bulan ini.');
+        }       
 
 
         $pdf = Pdf::loadView('pdf.laporanpresensi', compact('attendances', 'monthlyreport', 'team'));
-                return $pdf->setPaper('a4', 'landscape')->download('Laporan_Presensi_' . $monthlyreport->user->name . '..pdf');
+                return $pdf->setPaper('a4', 'landscape')->stream('Laporan_Presensi_' . $monthlyreport->user->name . '..pdf');
     }
 }
