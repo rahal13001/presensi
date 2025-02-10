@@ -96,9 +96,9 @@ class AttendancereportController extends Controller
         $team = Team::where('user_id', $monthlyreport->user_id)->with('user')->first();
        
 
-        if ($attendances->isEmpty()) {
-            return back()->with('error', 'Tidak ada data presensi untuk bulan ini.');
-        }       
+        // if ($attendances->isEmpty()) {
+        //     return back()->with('error', 'Tidak ada data presensi untuk bulan ini.');
+        // }       
 
 
         $pdf = Pdf::loadView('pdf.laporanpresensi', compact('attendances', 'monthlyreport', 'team'));
