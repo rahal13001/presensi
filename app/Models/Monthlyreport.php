@@ -28,6 +28,10 @@ class Monthlyreport extends Model
             if (empty($model->dukman_idnumber)) {
                 $model->dukman_idnumber = '198201312005021001';
             }
+
+            if (empty($model->user_id)) {
+                $model->user_id = auth()->user()->id;
+            }
         });
 }
 
