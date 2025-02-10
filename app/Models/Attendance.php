@@ -106,4 +106,10 @@ class Attendance extends Model
         return "{$hours} jam {$minutes} menit";
     }
 
+    public function getIsLateAttribute()
+    {
+        $lateDuration = $this->lateDuration();
+        return $lateDuration === "0 jam 0 menit" ? 'Tepat Waktu' : 'Terlambat';
+    }
+
 }

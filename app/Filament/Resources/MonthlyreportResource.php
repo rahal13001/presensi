@@ -94,6 +94,7 @@ class MonthlyreportResource extends Resource
                         Forms\Components\Group::make()
                         ->schema([
                             Forms\Components\Section::make()
+                                ->description('Tanda Tangan Pegawai')
                                 ->schema([
                                     SignaturePad::make('user_sign')
                                         ->label(__('Tanda Tangan Pegawai'))
@@ -110,40 +111,28 @@ class MonthlyreportResource extends Resource
                         Forms\Components\Group::make()
                         ->schema([
                             Forms\Components\Section::make()
-                                ->schema([
-                                    SignaturePad::make('team_sign')
-                                        ->label(__('Tanda Tangan Katimja'))
-                                        ->dotSize(2.0)
-                                        ->lineMinWidth(0.5)
-                                        ->lineMaxWidth(2.5)
-                                        ->throttle(16)
-                                        ->minDistance(5)
-                                        ->velocityFilterWeight(0.7)
-                                        // ->hidden(function ($record) {
-                                        //     $user = auth()->user();
-                                        //     // Check if the user is a super_admin or kepala
-                                        //     if ($user->hasRole(['super_admin', 'kepala'])) {
-                                        //         return false; // Don't hide the field
-                                        //     }
-
-                                        //     if($record->team_sign){
-                                        //         return false;
-                                        //     }
-                                    
-                                        //     // Check if the current user_id matches the related team_id condition
-                                        //     // $team = \App\Models\Team::where('id', $record->team_id)
-                                        //     //     ->where('user_id', $user->id)
-                                        //     //     ->first();
-                                    
-                                        //     // return $team === null; // Hide if no matching team found
-                                        // }),
-                                ])
+                            ->description('Tanda Tangan Ketua Tim Kerja')
+                            ->schema([
+                                SignaturePad::make('team_sign')
+                                    ->label(__('Tanda Tangan Katimja'))
+                                    ->dotSize(2.0)
+                                    ->lineMinWidth(0.5)
+                                    ->lineMaxWidth(2.5)
+                                    ->throttle(16)
+                                    ->minDistance(5)
+                                    ->velocityFilterWeight(0.7)
+                                    ->hidden(function ($record) {
+                                        $user = auth()->user();
+                                        return !$user->hasRole(['super_admin', 'kepala']); // Hide if the user is not 'super_admin' or 'kepala'
+                                    }),
+                            ])
                             
                         ]),
 
                         Forms\Components\Group::make()
                         ->schema([
                             Forms\Components\Section::make()
+                                ->description('Tanda Tangan Katimja Dukungan Manajemen')
                                 ->schema([
                                     Forms\Components\TextInput::make('dukman_leader')
                                         ->label('Nama Katimja Dukungan Manajemen')
@@ -162,17 +151,10 @@ class MonthlyreportResource extends Resource
                                         ->minDistance(5)
                                         ->velocityFilterWeight(0.7),
                                 ])
-                                // ->hidden(function ($record) {
-                                //     $user = auth()->user();
-                                //     if ($user->hasRole(['super_admin', 'kepala'])) {
-                                //         return false; // Don't hide the field
-                                //     }
-
-
-                                //     if($record->dukman_sign){
-                                //         return false;
-                                //     }
-                                // })
+                                ->hidden(function ($record) {
+                                    $user = auth()->user();
+                                        return !$user->hasRole(['super_admin', 'kepala']);
+                                })
                             
                         ]),
             
@@ -183,13 +165,17 @@ class MonthlyreportResource extends Resource
     {
         return $table
             ->modifyQueryUsing(function (Builder $query) {
-                $userId = Auth::user()->id;
-                $is_super_admin = Auth::user()->hasRole('super_admin');
-                $is_admin = Auth::user()->hasRole('admin');
-                $is_kepala = Auth::user()->hasRole('kepala');
+                
+                $is_user = Auth::user()->hasRole('user');
+                
 
-                if (!$is_super_admin || !$is_admin || !$is_kepala) {
-                    $query->where('monthlyreports.user_id', Auth::user()->id);
+                if ($is_user) {
+                    $query->where('monthlyreports.user_id', Auth::user()->id)
+                          ->orderBy('year', 'desc')
+                          ->orderBy('month', 'desc');
+                } else {
+                    $query->orderBy('year', 'desc')
+                          ->orderBy('month', 'desc');
                 }
                 
             })

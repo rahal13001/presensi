@@ -18,6 +18,7 @@ use Guava\FilamentModalRelationManagers\Actions\Table\RelationManagerAction;
 use App\Filament\Resources\AttendanceResource\RelationManagers\DailyreportsRelationManager;
 use Filament\Forms\Components\DatePicker;
 use Illuminate\Support\Facades\Date;
+use Filament\Tables\Grouping\Group;
 
 class AttendanceResource extends Resource
 {
@@ -130,6 +131,16 @@ class AttendanceResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
                 
             ])
+            ->groups([
+                Group::make('user.name')
+                    ->label('Pegawai')
+                    ->collapsible(),
+                Group::make('created_at')
+                    ->label('Tanggal')
+                    ->collapsible(),
+                
+            ])
+            ->defaultGroup('created_at')
             ->defaultSort('created_at', 'desc')
             ->filters([
                 Filter::make('created_at')
