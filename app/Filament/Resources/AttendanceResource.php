@@ -78,12 +78,9 @@ class AttendanceResource extends Resource
     {
         return $table
             ->modifyQueryUsing(function (Builder $query) {
-                $userId = Auth::user()->id;
-                $is_super_admin = Auth::user()->hasRole('super_admin');
-                $is_admin = Auth::user()->hasRole('admin');
-                $is_kepala = Auth::user()->hasRole('kepala');
+                $is_user = Auth::user()->hasRole('user');
 
-                if (!$is_super_admin || !$is_admin || !$is_kepala) {
+                if ($is_user) {
                     $query->where('attendances.user_id', Auth::user()->id);
                 }
                 

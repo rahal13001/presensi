@@ -53,15 +53,13 @@ class ScheduleResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-                ->modifyQueryUsing(function (Builder $query) {
-                    $is_super_admin = Auth::user()->hasRole('super_admin');
-                    $is_admin = Auth::user()->hasRole('admin');
-                    $is_kepala = Auth::user()->hasRole('kepala');
+            ->modifyQueryUsing(function (Builder $query) {
+                $is_user = Auth::user()->hasRole('user');
+                if ($is_user) {
+                    $query->where('user_id', Auth::user()->id);
+                }
+            })
 
-                    if (!$is_super_admin || !$is_admin || !$is_kepala) {
-                        $query->where('user_id', Auth::user()->id);
-                    }
-                })
             ->columns([
                 Tables\Columns\TextColumn::make('user.name')
                     ->label('Name')
