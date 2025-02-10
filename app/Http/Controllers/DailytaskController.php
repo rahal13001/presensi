@@ -27,6 +27,6 @@ class DailytaskController extends Controller
                 }
             
                 $pdf = Pdf::loadView('pdf.tugasharian', compact('attendances', 'monthlyreport'));
-                return $pdf->setPaper('a4', 'landscape')->stream('Laporan_Tugas_Harian_' . $monthlyreport->user->name . '..pdf');
+                return $pdf->setPaper('a4', 'landscape')->download('Laporan_Tugas_Harian_' . $monthlyreport->user->name . '..pdf');
     }
 }

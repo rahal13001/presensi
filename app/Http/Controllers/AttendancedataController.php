@@ -102,6 +102,6 @@ class AttendancedataController extends Controller
 
 
         $pdf = Pdf::loadView('pdf.datapresensi', compact('attendances', 'monthlyreport', 'team'));
-                return $pdf->setPaper('a4', 'landscape')->stream('Data_Presensi_' . $monthlyreport->user->name . '..pdf');
+                return $pdf->setPaper('a4', 'landscape')->download('Data_Presensi_' . $monthlyreport->user->name . '..pdf');
     }
 }
