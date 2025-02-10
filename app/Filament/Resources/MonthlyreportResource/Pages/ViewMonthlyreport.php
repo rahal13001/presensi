@@ -34,7 +34,7 @@ class ViewMonthlyreport extends ViewRecord
             Action::make('Laporan Presensi')
                     ->label('Laporan Presensi')
                     ->icon('heroicon-o-cloud-arrow-down')
-                    ->url(fn ($record) => route('pdfdatapresensi', $record->id), '_blank')
+                    ->url(fn ($record) => route('pdflaporanpresensi', $record->id), '_blank')
                     ->button()
                     ->color('brown'),
 

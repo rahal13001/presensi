@@ -12,20 +12,25 @@ use Filament\Widgets\TableWidget as BaseWidget;
 
 class MostLateEmployees extends BaseWidget
 {
-    
     protected static ?string $heading = 'Top 5 Pegawai Telat Bulan Ini';
+
     public function table(Table $table): Table
     {
-        
         return $table
-            ->query(
-                Attendance::select('user_id', DB::raw('SUM(TIMESTAMPDIFF(MINUTE, schedule_start_time, start_time)) as total_late_minutes'))
-                ->whereNotNull('start_time') // Ensure valid attendance records
-                ->whereColumn('start_time', '>', 'schedule_start_time') // Late condition
-                ->groupBy('user_id')
-                ->orderByDesc('total_late_minutes')
-                ->limit(5)
-                ->with('user')
+        ->query(
+            Attendance::select('user_id', DB::raw('SUM(
+                CASE 
+                    WHEN start_time IS NULL AND end_time IS NULL THEN 0  -- No lateness if both are null
+                    WHEN start_time IS NULL THEN 240  -- 4-hour penalty for missing start_time
+                    WHEN TIME(start_time) <= TIME(schedule_start_time) THEN 0  -- Not late
+                    ELSE TIMESTAMPDIFF(MINUTE, schedule_start_time, start_time)
+                END
+            ) as total_late_minutes'))
+            ->whereNotNull('schedule_start_time')
+            ->groupBy('user_id')
+            ->orderByDesc('total_late_minutes')
+            ->addSelect('user_id as id')  // Ensure each record has a unique ID
+            ->with('user')
         )
         ->filters([
             // Month Filter
@@ -55,14 +60,13 @@ class MostLateEmployees extends BaseWidget
                 ->label('Nama')
                 ->sortable()
                 ->searchable(),
-
+            
             Tables\Columns\TextColumn::make('total_late_minutes')
-                ->label('Total')
+                ->label('Total Terlambat')
                 ->sortable()
-                ->numeric()
                 ->formatStateUsing(fn ($state) => floor($state / 60) . ' Jam ' . ($state % 60) . ' Menit'),
         ])
-        ->modifyQueryUsing(fn ($query) => $query->addSelect(DB::raw('user_id as id')))
+        ->defaultPaginationPageOption(5)
         ->defaultSort('total_late_minutes', 'desc');
     }
 }

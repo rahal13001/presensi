@@ -111,7 +111,46 @@ class MonthlyreportResource extends Resource
                         ->schema([
                             Forms\Components\Section::make()
                                 ->schema([
-                                    SignaturePad::make('Team_sign')
+                                    SignaturePad::make('team_sign')
+                                        ->label(__('Tanda Tangan Katimja'))
+                                        ->dotSize(2.0)
+                                        ->lineMinWidth(0.5)
+                                        ->lineMaxWidth(2.5)
+                                        ->throttle(16)
+                                        ->minDistance(5)
+                                        ->velocityFilterWeight(0.7)
+                                        ->hidden(function ($record) {
+                                            $user = auth()->user();
+                                    
+                                            // Check if the user is a super_admin or kepala
+                                            if ($user->hasRole(['super_admin', 'kepala'])) {
+                                                return false; // Don't hide the field
+                                            }
+                                    
+                                            // Check if the current user_id matches the related team_id condition
+                                            $team = \App\Models\Team::where('id', $record->team_id)
+                                                ->where('user_id', $user->id)
+                                                ->first();
+                                    
+                                            return $team === null; // Hide if no matching team found
+                                        }),
+                                ])
+                            
+                        ]),
+
+                        Forms\Components\Group::make()
+                        ->schema([
+                            Forms\Components\Section::make()
+                                ->schema([
+                                    Forms\Components\TextInput::make('dukman_leader')
+                                        ->label('Nama Katimja Dukungan Manajemen')
+                                        ->maxLength(255)
+                                        ->default('Hendrik Sombo, S.Pi., M.Si.'),
+                                    Forms\Components\TextInput::make('dukman_idnumber')
+                                        ->label('NIP Katimja Dukungan Manajemen')
+                                        ->maxLength(255)
+                                        ->default('198201312005021001'),
+                                    SignaturePad::make('dukman_sign')
                                         ->label(__('Tanda Tangan Katimja'))
                                         ->dotSize(2.0)
                                         ->lineMinWidth(0.5)
@@ -120,6 +159,12 @@ class MonthlyreportResource extends Resource
                                         ->minDistance(5)
                                         ->velocityFilterWeight(0.7),
                                 ])
+                                ->hidden(function ($record) {
+                                    $user = auth()->user();
+                                    if ($user->hasRole(['super_admin', 'kepala'])) {
+                                        return false; // Don't hide the field
+                                    }
+                                })
                             
                         ]),
             
@@ -218,16 +263,31 @@ class MonthlyreportResource extends Resource
                                 ][$state] ?? 'Unknown'),
                             ])->columns(2)
                         ->collapsible(),
-                    Section::make('Informasi Penyusun')
+                    Section::make('Pengesahan')
                         ->schema([
-                            ImageEntry::make('user_sign')
-                                ->height(150)
-                                ->label('Tanda Tangan Penyusun'),
                             ImageEntry::make('team_sign')
                                 ->height(150)
                                 ->label('Tanda Tangan Katimja'),
+                            ImageEntry::make('user_sign')
+                                ->height(150)
+                                ->label('Tanda Tangan Penyusun'),
+                            
                         ])->columns(2)
                     ->collapsible(),
+                    Section::make('Pengesahan Dukungan Manajemen')
+                        ->schema([
+                            TextEntry::make('dukman_leader')
+                                ->label('Nama')
+                                ->weight(FontWeight::Bold),
+                            TextEntry::make('dukman_idnumber')
+                                ->label('NIP')
+                                ->weight(FontWeight::Bold),
+                            ImageEntry::make('dukman_sign')
+                                ->height(150)
+                                ->label('Tanda Tangan Katimja'),
+                        ])->columns(2)
+                    ->collapsible()
+                    ->hidden(fn ($record) => empty($record->dukman_sign)),
                 ]);
         }
 

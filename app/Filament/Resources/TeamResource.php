@@ -42,10 +42,12 @@ class TeamResource extends Resource
                         ->schema([
                                 Forms\Components\Section::make()
                                 ->schema([
-                                    Forms\Components\TextInput::make('team_leader')
+                                    Forms\Components\Select::make('user_id')
+                                        ->relationship('user', 'name')
+                                        ->searchable()
+                                        ->preload()
                                         ->label('Ketua Tim Kerja')
-                                        ->required()
-                                        ->maxLength(255),
+                                        ->required(),
                                 ])
                             ]),
                         
@@ -63,7 +65,7 @@ class TeamResource extends Resource
                 Tables\Columns\TextColumn::make('team_name')
                     ->label('Nama Tim Kerja')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('team_leader')
+                Tables\Columns\TextColumn::make('user.name')
                     ->label('Ketua Tim Kerja')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')

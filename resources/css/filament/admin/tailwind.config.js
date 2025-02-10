@@ -7,5 +7,6 @@ export default {
         './resources/views/filament/**/*.blade.php',
         './vendor/filament/**/*.blade.php',
         './vendor/guava/filament-modal-relation-managers/resources/**/*.blade.php',
+        './vendor/cmsmaxinc/filament-error-pages/resources/**/*.blade.php',
     ],
 }

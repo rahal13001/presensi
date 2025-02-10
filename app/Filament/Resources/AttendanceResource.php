@@ -67,8 +67,10 @@ class AttendanceResource extends Resource
                     ->numeric(),
                 Forms\Components\TextInput::make('end_longitude')
                     ->numeric(),
-                Forms\Components\Toggle::make('psw')
-                    ->label('PSW'),
+                Forms\Components\Toggle::make('not_present')
+                    ->label('Tidak Hadir'),
+                Forms\Components\Toggle::make('is_leave')
+                    ->label('Cuti'),
             ]);
     }
 
@@ -100,13 +102,21 @@ class AttendanceResource extends Resource
                     ->label('Status')
                     ->badge()
                     ->getStateUsing(function ($record) {
-                        return $record->isLate() ? 'Terlambat' : 'Tepat Waktu';
+                        if (is_null($record->start_time) && is_null($record->end_time)) {
+                            return 'Tidak Masuk';
+                        }
+                        
+                        return $record->lateDuration() === "0 jam 0 menit" ? 'Tepat Waktu' : 'Terlambat';
                     })
                     ->color(fn (string $state): string => match ($state) {
                         'Tepat Waktu' => 'success',
                         'Terlambat' => 'danger',
+                        'Tidak Masuk' => 'warning',
                     })
-                    ->description(fn (Attendance $record): string => 'Durasi : '.$record->workDuration()),
+                    ->description(fn (Attendance $record): string => 'Durasi Terlambat: ' . $record->lateDuration()),
+                Tables\Columns\TextColumn::make('work_duration')
+                    ->label('Durasi Kerja')
+                    ->getStateUsing(fn ($record) => $record->workDuration()),
                
                 Tables\Columns\TextColumn::make('start_time')
                     ->label('Waktu Datang'),

@@ -50,6 +50,17 @@
       0 => 'BladeUI\\Icons\\BladeIconsServiceProvider',
     ),
   ),
+  'cmsmaxinc/filament-error-pages' => 
+  array (
+    'aliases' => 
+    array (
+      'FilamentErrorPages' => 'Cmsmaxinc\\FilamentErrorPages\\Facades\\FilamentErrorPages',
+    ),
+    'providers' => 
+    array (
+      0 => 'Cmsmaxinc\\FilamentErrorPages\\FilamentErrorPagesServiceProvider',
+    ),
+  ),
   'dedoc/scramble' => 
   array (
     'providers' => 

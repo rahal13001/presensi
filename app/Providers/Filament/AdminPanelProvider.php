@@ -6,10 +6,10 @@ use Filament\Pages;
 use Filament\Panel;
 use Filament\Widgets;
 use Filament\PanelProvider;
-use App\Filament\Pages\Auth\Login;
 use App\Filament\Pages\Dashboard;
-use App\Livewire\UpdateIdNumberComponent;
+use App\Filament\Pages\Auth\Login;
 use Filament\Support\Colors\Color;
+use App\Livewire\UpdateIdNumberComponent;
 use Filament\Http\Middleware\Authenticate;
 use Jeffgreco13\FilamentBreezy\BreezyCore;
 use Illuminate\Session\Middleware\StartSession;
@@ -18,6 +18,7 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
+use Cmsmaxinc\FilamentErrorPages\FilamentErrorPagesPlugin;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
@@ -71,7 +72,8 @@ class AdminPanelProvider extends PanelProvider
                 )
                 ->myProfileComponents([
                     UpdateIdNumberComponent::class
-                    ])
+                ]),
+                FilamentErrorPagesPlugin::make(),
             ])
             ->viteTheme('resources/css/filament/admin/theme.css')
             ->navigationGroups([

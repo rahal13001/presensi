@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Monthlyreport extends Model
 {
+    use \Znck\Eloquent\Traits\BelongsToThrough;
+
     protected $fillable = [
         'user_id',
         'month',
@@ -17,6 +19,17 @@ class Monthlyreport extends Model
     ];
 
     
+    protected static function booted()
+    {
+        static::creating(function ($model) {
+            if (empty($model->dukman_leader)) {
+                $model->dukman_leader = 'Hendrik Sombo, S.Pi., M.Si.';
+            }
+            if (empty($model->dukman_idnumber)) {
+                $model->dukman_idnumber = '198201312005021001';
+            }
+        });
+}
 
     public function user()
     {
@@ -26,6 +39,11 @@ class Monthlyreport extends Model
     public function team()
     {
         return $this->belongsTo(Team::class);
+    }
+
+    public function position(): \Znck\Eloquent\Relations\BelongsToThrough
+    {
+        return $this->belongsToThrough(Position::class, User::class);
     }
 
   

@@ -3,6 +3,8 @@
 use App\Livewire\Presensi;
 use App\Livewire\Shiftpresensi;
 use App\Exports\AttendanceExport;
+use App\Http\Controllers\AttendancedataController;
+use App\Http\Controllers\AttendancereportController;
 use App\Http\Controllers\DailytaskController;
 use App\Http\Middleware\CheckUserGroup;
 use Illuminate\Support\Facades\Route;
@@ -28,10 +30,6 @@ Route::get('/', function () {
 Route::get('/pdftugasharian/{monthlyreport}', DailytaskController::class)->name('pdftugasharian');
 
 
-Route::get('/datapresensi', function () {
-    return view('pdf.tugasharian');
-})->name('pdfdatapresensi');
+Route::get('/datapresensi/{monthlyreport}', AttendancedataController::class)->name('pdfdatapresensi');
 
-Route::get('/laporanpresensi', function () {
-    return view('pdf.tugasharian');
-})->name('pdflaporanpresensi');
+Route::get('/laporanpresensi/{monthlyreport}', AttendancereportController::class)->name('pdflaporanpresensi');

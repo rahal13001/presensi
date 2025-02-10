@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('attendances', function (Blueprint $table) {
-            $table->boolean('psw')->default(false)->nullable();
+            $table->boolean('not_present')->default(false)->nullable();
         });
     }
 

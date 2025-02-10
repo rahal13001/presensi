@@ -3,21 +3,23 @@
 namespace App\Http\Controllers;
 
 use Carbon\Carbon;
+use App\Models\Team;
 use App\Models\Leave;
 use App\Models\Attendance;
 use Illuminate\Http\Request;
 use App\Models\Monthlyreport;
-use App\Models\Team;
 use Barryvdh\DomPDF\Facade\Pdf;
 
-class AttendancedataController extends Controller
+class AttendancereportController extends Controller
 {
     /**
      * Handle the incoming request.
      */
     public function __invoke(Monthlyreport $monthlyreport)
     {
-        
+
+
+
         $attendances = Attendance::where('user_id', $monthlyreport->user_id)->with('user', 'position', 'dailyreports')
         ->whereYear('created_at', (int) $monthlyreport->year)
         ->whereMonth('created_at', (int) $monthlyreport->month)
@@ -92,16 +94,14 @@ class AttendancedataController extends Controller
         });
 
         $team = Team::where('user_id', $monthlyreport->user_id)->with('user')->first();
-
        
 
         if ($attendances->isEmpty()) {
             return back()->with('error', 'Tidak ada data presensi untuk bulan ini.');
-        }
-        
+        }       
 
 
-        $pdf = Pdf::loadView('pdf.datapresensi', compact('attendances', 'monthlyreport', 'team'));
-                return $pdf->setPaper('a4', 'landscape')->stream('Data_Presensi_' . $monthlyreport->user->name . '..pdf');
+        $pdf = Pdf::loadView('pdf.laporanpresensi', compact('attendances', 'monthlyreport', 'team'));
+                return $pdf->setPaper('a4', 'landscape')->stream('Laporan_Presensi_' . $monthlyreport->user->name . '..pdf');
     }
 }
