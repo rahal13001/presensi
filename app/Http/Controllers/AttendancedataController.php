@@ -95,9 +95,9 @@ class AttendancedataController extends Controller
 
        
 
-        if ($attendances->isEmpty()) {
-            return back()->with('error', 'Tidak ada data presensi untuk bulan ini.');
-        }
+        // if ($attendances->isEmpty()) {
+        //     return back()->with('error', 'Tidak ada data presensi untuk bulan ini.');
+        // }
         
 
 
