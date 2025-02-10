@@ -39,8 +39,9 @@
                          <button type="button" onclick="tagLocation()" class="px-4 py-2 bg-blue-500 text-white rounded">Tag Location</button>
                          @if($insideRadius)
                             <button type="submit" class="px-4 py-2 bg-green-500 text-white rounded" wire:loading.attr="disabled">
-                                Submit Presensi
+                                Masuk
                             </button>
+                            <button class="px-4 py-2 text-white rounded" style="background-color: red;" wire:loading.attr="disabled" wire:click='store_end'>Pulang</button>
                          @endif
                      </form>
                  </div>

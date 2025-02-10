@@ -132,19 +132,64 @@ class Shiftpresensi extends Component
     public function store_end() 
     {
        
-        $attendance = Attendance::where('user_id', Auth::user()->id)->latest()->first();
-        if ($attendance->end_time) {
-            session()->flash('error', 'Gagal Presensi Pulang, Anda Belum Presensi Masuk.');
+        $this->validate([
+            'latitude' => 'required',
+            'longitude' => 'required',
+            'accuracy' => 'required'
+        ]);
+
+        $shiftschedule = Shiftschedule::where('id', $this->shiftschedule_id)->with('shift','office')->first();
+
+        $today = Carbon::today()->format('Y-m-d');
+        //cek sedang cuti atau tidak
+        $approvedLeave = Leave::where('user_id', Auth::user()->id)
+                              ->where('status', 'approved')
+                              ->whereDate('start_date', '<=', $today)
+                              ->whereDate('end_date', '>=', $today)
+                              ->exists();
+
+        if ($approvedLeave) {
+            session()->flash('error', 'Anda tidak dapat melakukan presensi karena sedang cuti.');
+            return;
+        }
+
+        if ($this->latitude == null || $this->longitude == null) {
+            session()->flash('error', 'Gagal mendapatkan lokasi.');
             return;
         }
         
-        $attendance->update([
-            'end_latitude' => $this->latitude,
-            'end_longitude' => $this->longitude,
-            'end_time' => Carbon::now()->toTimeString(),
-            'end_accuracy' => $this->accuracy,
-        ]);
-        return redirect('admin/attendances');
+        // Detect Fake GPS (accuracy < 7 meters)
+        if ($this->insideRadius === false) {
+            session()->flash('error', 'Presensi ditolak! Fake GPS terdeteksi.');
+            return;
+        }
+
+        
+            // dd($this->accuracy);
+            // $attendance = Attendance::where('user_id', Auth::user()->id)->first();
+            Attendance::create([
+                    'user_id' => Auth::user()->id,
+                    'schedule_latitude' => $shiftschedule->office->latitude,
+                    'schedule_longitude' => $shiftschedule->office->longitude,
+                    'schedule_start_time' => $shiftschedule->shift->start_time,
+                    'schedule_end_time' => $shiftschedule->shift->end_time,
+                    'start_latitude' => $this->latitude,
+                    'start_longitude' => $this->longitude,
+                    // 'start_time' => Carbon::now()->toTimeString(),
+                    'end_time' => Carbon::now()->toTimeString(),
+                    'start_accuracy' => $this->accuracy,
+                ]);
+            
+            // else {
+            //     $attendance->update([
+            //         'end_latitude' => $this->latitude,
+            //         'end_longitude' => $this->longitude,
+            //         'end_time' => Carbon::now()->toTimeString(),
+            //         'end_accuracy' => $this->accuracy,
+            //     ]);
+            // }
+            
+            return redirect('admin/attendances');
     }
 
 }
