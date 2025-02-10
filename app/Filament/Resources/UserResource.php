@@ -61,20 +61,13 @@ class UserResource extends Resource
                         Forms\Components\Section::make()
                             ->schema([
                                 Forms\Components\Select::make('roles')
-                                    ->relationship('roles', 'name')
+                                    ->relationship('roles', 'name', fn ($query) => 
+                                        $query->when(!Auth::user()->hasRole('super_admin'), fn ($q) => $q->where('name', '!=', 'super_admin'))
+                                    )
                                     ->preload()
-                                    ->options(function () {
-                                        $user = Auth::user();
+                                    ->searchable()
+                                    ->label('Roles'),
                                 
-                                        // If the user is NOT a super admin, remove "super_admin" from options
-                                        if (!$user->hasRole('super_admin')) {
-                                            return \Spatie\Permission\Models\Role::where('name', '!=', 'super_admin')->pluck('name', 'name');
-                                        }
-                                
-                                        // If user is super admin, show all roles
-                                        return \Spatie\Permission\Models\Role::pluck('name', 'name');
-                                    })
-                                    ->searchable(),
                                 Forms\Components\DateTimePicker::make('email_verified_at'),
                                 Forms\Components\TextInput::make('password')
                                     ->password()
