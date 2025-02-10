@@ -119,24 +119,24 @@ class MonthlyreportResource extends Resource
                                         ->throttle(16)
                                         ->minDistance(5)
                                         ->velocityFilterWeight(0.7)
-                                        ->hidden(function ($record) {
-                                            $user = auth()->user();
-                                            // Check if the user is a super_admin or kepala
-                                            if ($user->hasRole(['super_admin', 'kepala'])) {
-                                                return false; // Don't hide the field
-                                            }
+                                        // ->hidden(function ($record) {
+                                        //     $user = auth()->user();
+                                        //     // Check if the user is a super_admin or kepala
+                                        //     if ($user->hasRole(['super_admin', 'kepala'])) {
+                                        //         return false; // Don't hide the field
+                                        //     }
 
-                                            if($record->team_sign){
-                                                return false;
-                                            }
+                                        //     if($record->team_sign){
+                                        //         return false;
+                                        //     }
                                     
-                                            // Check if the current user_id matches the related team_id condition
-                                            // $team = \App\Models\Team::where('id', $record->team_id)
-                                            //     ->where('user_id', $user->id)
-                                            //     ->first();
+                                        //     // Check if the current user_id matches the related team_id condition
+                                        //     // $team = \App\Models\Team::where('id', $record->team_id)
+                                        //     //     ->where('user_id', $user->id)
+                                        //     //     ->first();
                                     
-                                            // return $team === null; // Hide if no matching team found
-                                        }),
+                                        //     // return $team === null; // Hide if no matching team found
+                                        // }),
                                 ])
                             
                         ]),
@@ -162,17 +162,17 @@ class MonthlyreportResource extends Resource
                                         ->minDistance(5)
                                         ->velocityFilterWeight(0.7),
                                 ])
-                                ->hidden(function ($record) {
-                                    $user = auth()->user();
-                                    if ($user->hasRole(['super_admin', 'kepala'])) {
-                                        return false; // Don't hide the field
-                                    }
+                                // ->hidden(function ($record) {
+                                //     $user = auth()->user();
+                                //     if ($user->hasRole(['super_admin', 'kepala'])) {
+                                //         return false; // Don't hide the field
+                                //     }
 
-                                    
-                                    if($record->dukman_sign){
-                                        return false;
-                                    }
-                                })
+
+                                //     if($record->dukman_sign){
+                                //         return false;
+                                //     }
+                                // })
                             
                         ]),
             
