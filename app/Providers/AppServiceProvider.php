@@ -12,6 +12,8 @@ use Filament\Support\Facades\FilamentColor;
 use Filament\Support\Colors\Color;
 use Dedoc\Scramble\Support\Generator\OpenApi;
 use Dedoc\Scramble\Support\Generator\SecurityScheme;
+use Filament\Facades\Filament;
+use Filament\Navigation\UserMenuItem;
 
 class AppServiceProvider extends ServiceProvider
 {
