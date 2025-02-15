@@ -32,9 +32,7 @@ class ListAttendances extends ListRecords
             ];
         } else {
             return [
-                Action::make('Download Data')
-                    ->url(route('attendance-export'))
-                    ->color('primary'),
+                
                 Action::make('Tambah Presensi')
                     ->url(route('shiftpresensi'))
                     ->color('success'),

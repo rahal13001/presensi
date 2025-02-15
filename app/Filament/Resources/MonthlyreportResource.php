@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use Carbon\Carbon;
 use Filament\Forms;
 use Filament\Tables;
 use Filament\Infolists;
@@ -14,6 +15,7 @@ use Filament\Forms\FormsComponent;
 use Illuminate\Support\Facades\Auth;
 use Filament\Support\Enums\FontWeight;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Infolists\Components\Section;
 use Filament\Infolists\Components\TextEntry;
@@ -125,6 +127,8 @@ class MonthlyreportResource extends Resource
                                         $user = auth()->user();
                                         return !$user->hasRole(['super_admin', 'kepala']); // Hide if the user is not 'super_admin' or 'kepala'
                                     }),
+
+                                
                             ])
                             
                         ]),
@@ -205,6 +209,23 @@ class MonthlyreportResource extends Resource
                     ->label('Tahun')
                     ->searchable()
                     ->sortable(),
+
+                Tables\Columns\BooleanColumn::make('team_sign')
+                    ->label('TTD Katimja')
+                    ->getStateUsing(fn ($record) => !is_null($record->team_sign)) // Convert null to false
+                    ->trueIcon('heroicon-o-check-circle')   // Green check icon
+                    ->falseIcon('heroicon-o-x-circle')      // Red cross icon
+                    ->trueColor('success')                  // Green color for true
+                    ->falseColor('danger'),
+                
+                Tables\Columns\BooleanColumn::make('dukman_sign')
+                    ->label('TTD Dukman')
+                    ->getStateUsing(fn ($record) => !is_null($record->dukman_sign)) // Convert null to false
+                    ->trueIcon('heroicon-o-check-circle')   // Green check icon
+                    ->falseIcon('heroicon-o-x-circle')      // Red cross icon
+                    ->trueColor('success')                  // Green color for true
+                    ->falseColor('danger'),
+
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -215,7 +236,30 @@ class MonthlyreportResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+
+                SelectFilter::make('user_id')
+                    ->label('Pegawai')
+                    ->relationship('user', 'name')
+                    ->searchable()
+                    ->multiple()
+                    ->preload(),
+
+                SelectFilter::make('year')
+                    ->label('Tahun')
+                    ->options(array_combine(
+                        range(Carbon::now()->year - 5, Carbon::now()->year),
+                        range(Carbon::now()->year - 5, Carbon::now()->year)
+                    ))
+                    ->default(Carbon::now()->year),
+
+                SelectFilter::make('month')
+                    ->label('Month')
+                    ->options([
+                        '1' => 'Januari', '2' => 'Februari', '3' => 'Maret',
+                        '4' => 'April', '5' => 'Mei', '6' => 'Juni',
+                        '7' => 'Juli', '8' => 'Augustus', '9' => 'September',
+                        '10' => 'Oktober', '11' => 'November', '12' => 'Desember'
+                    ]),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),

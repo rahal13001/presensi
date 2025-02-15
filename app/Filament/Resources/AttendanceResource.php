@@ -3,22 +3,29 @@
 namespace App\Filament\Resources;
 
 use Auth;
+use Carbon\Carbon;
 use Filament\Forms;
 use Filament\Tables;
 use Filament\Forms\Form;
 use App\Models\Attendance;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
+use App\Exports\AttendanceExport;
 use Filament\Tables\Filters\Filter;
+use Filament\Tables\Grouping\Group;
+use Illuminate\Support\Facades\Date;
+use Maatwebsite\Excel\Facades\Excel;
+use Filament\Tables\Actions\BulkAction;
+
+use Filament\Forms\Components\DatePicker;
+use Filament\Tables\Filters\SelectFilter;
+
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\AttendanceResource\Pages;
 use App\Filament\Resources\AttendanceResource\RelationManagers;
 use Guava\FilamentModalRelationManagers\Actions\Table\RelationManagerAction;
 use App\Filament\Resources\AttendanceResource\RelationManagers\DailyreportsRelationManager;
-use Filament\Forms\Components\DatePicker;
-use Illuminate\Support\Facades\Date;
-use Filament\Tables\Grouping\Group;
 
 class AttendanceResource extends Resource
 {
@@ -120,6 +127,13 @@ class AttendanceResource extends Resource
                     ->label('Waktu Datang'),
                 Tables\Columns\TextColumn::make('end_time')
                     ->label('Waktu Pulang'),
+                
+                Tables\Columns\BooleanColumn::make('is_report')
+                    ->label('Laporan')
+                    ->trueIcon('heroicon-o-check-circle')   // Green check icon for true
+                    ->falseIcon('heroicon-o-x-circle')      // Red cross icon for false
+                    ->trueColor('success')                  // Green color for true
+                    ->falseColor('danger'),          // Red color for false
                     
                 Tables\Columns\TextColumn::make('updated_at')
                     ->dateTime()
@@ -143,6 +157,27 @@ class AttendanceResource extends Resource
             ->defaultGroup('created_at')
             ->defaultSort('created_at', 'desc')
             ->filters([
+                SelectFilter::make('year')
+                ->label('Tahun')
+                ->options(array_combine(
+                    range(Carbon::now()->year - 5, Carbon::now()->year),
+                    range(Carbon::now()->year - 5, Carbon::now()->year)
+                ))
+                ->default(Carbon::now()->year)
+                ->query(fn ($query, $state) => $query->whereYear('created_at', $state)),
+
+
+                SelectFilter::make('month')
+                ->label('Bulan')
+                ->options([
+                    '1' => 'Januari', '2' => 'Februari', '3' => 'Maret',
+                    '4' => 'April', '5' => 'Mei', '6' => 'Juni',
+                    '7' => 'Juli', '8' => 'Augustus', '9' => 'September',
+                    '10' => 'Oktober', '11' => 'November', '12' => 'Desember'
+                ])
+                ->default(Carbon::now()->month)
+                ->query(fn ($query, $state) => $query->whereMonth('created_at', $state)),
+
                 Filter::make('created_at')
                     ->label('Tanggal')
                     ->form(
@@ -177,6 +212,20 @@ class AttendanceResource extends Resource
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
+
+                    BulkAction::make('export')
+                    ->label('Export Selected')
+                    ->action(function ($records) {
+                        // Convert the collection to an array of IDs
+                        $selectedIds = $records->pluck('id')->toArray();
+                
+                        // Pass the IDs to the export class
+                        $export = new AttendanceExport($selectedIds);
+                
+                        // Download the export file
+                        return \Maatwebsite\Excel\Facades\Excel::download($export, 'attendance-' . date('Y-m-d') . '.xlsx');
+                    }),
+                    
                 ]),
             ]);
     }

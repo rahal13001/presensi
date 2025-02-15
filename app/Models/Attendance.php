@@ -112,4 +112,9 @@ class Attendance extends Model
         return $lateDuration === "0 jam 0 menit" ? 'Tepat Waktu' : 'Terlambat';
     }
 
+    public function getIsReportAttribute()
+    {
+        return $this->dailyreports()->count() > 0;
+    }
+
 }

@@ -19,6 +19,7 @@
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.9",
         "maatwebsite/excel": "^3.1",
+        "pxlrbt/filament-excel": "^2.4",
         "saade/filament-autograph": "^3.1",
         "staudenmeir/belongs-to-through": "^2.5"
     },
