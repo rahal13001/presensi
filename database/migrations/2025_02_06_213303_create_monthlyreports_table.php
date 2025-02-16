@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('monthlyreports', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->foreignId('team_id')->constrained()->onDelete('cascade');
+            $table->string('team_name')->nullable();
             $table->date('sign_date')->nullable();
             $table->integer('month',false);
             $table->year('year');

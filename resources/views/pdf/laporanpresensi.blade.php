@@ -55,9 +55,9 @@
         .signature-table {
             width: 100%;
             table-layout: fixed;
-            border:none;
             text-align: center;
             margin-top: 40px;
+            border: none;
         }
 
         .signature-table td {
@@ -171,24 +171,29 @@
             <td>
                 <p>Pengawas Pekerjaan</p>
                 <p><strong>Ketua Tim Dukungan Manajerial</strong></p>
+            
                 @if ($monthlyreport->team_sign)
                     <img src="{{ $monthlyreport->dukman_sign }}" alt="Team Sign">
                 @else
                     <div class="placeholder"></div>
                 @endif
-                <p>{{ $monthlyreport->dukman_leader }}</p>
-                <p>NIP. {{ $monthlyreport->dukman_idnumber }}</p>
+            
+                <p>{{ $monthlyreport->dukman_leader ?? '&nbsp;' }}</p>
+                <p>NIP. {{ $monthlyreport->dukman_idnumber ?? '&nbsp;' }}</p>
             </td>
+            
             <td>
                 <p>PJLP</p>
-                <p><strong>{{ $attendance->position->position_name }}</strong></p>
+                <p><strong>{{ $attendance->position->position_name ?? '&nbsp;' }}</strong></p>
+            
                 @if ($monthlyreport->user_sign)
                     <img src="{{ $monthlyreport->user_sign }}" alt="User Sign">
                 @else
                     <div class="placeholder"></div>
                 @endif
-                <p>{{ $monthlyreport->user->name }}</p>
-                <p>NIK. {{ $monthlyreport->user->idnumber }}</p>
+            
+                <p>{{ $monthlyreport->user->name ?? '&nbsp;' }}</p>
+                <p>NIK. {{ $monthlyreport->user->idnumber ?? '&nbsp;' }}</p>
             </td>
         </tr>
     </table>

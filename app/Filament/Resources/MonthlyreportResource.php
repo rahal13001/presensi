@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use Carbon\Carbon;
 use Filament\Forms;
+use App\Models\Team;
 use Filament\Tables;
 use Filament\Infolists;
 use Filament\Forms\Form;
@@ -50,12 +51,26 @@ class MonthlyreportResource extends Resource
                                 ->required()
                                 ->default(fn () => auth()->user()->hasRole('user') ? auth()->id() : null) // Auto-select if role is "user"
                                 ->disabled(fn () => auth()->user()->hasRole('user')), // Disable selection if user is "user"
-                            Forms\Components\Select::make('team_id')
-                                ->relationship('team', 'team_name')
+                            Forms\Components\Select::make('team_name')
+                                ->options(
+                                    Team::select('team_name')
+                                    ->distinct()  // Ensure no duplicate team names
+                                    ->pluck('team_name', 'team_name')
+                                )
                                 ->label('Tim Kerja')
                                 ->searchable()
                                 ->preload()
-                                ->required(),
+                                ->required()
+                                ->live()
+                                ->afterStateUpdated(function ($state, $set) {
+                                    // Find the team by name and get its leader's name
+                                    $team = Team::where('team_name', $state)->with('user')->first();
+                                    $leaderName = $team?->user?->name ?? 'Tidak Ada Ketua'; // Assuming 'leader' is a relation to the User model
+                                    $set('team_leader', $leaderName); // Automatically set the team_leader field
+
+                                    $leaderIdNumber = $team?->user?->idnumber ?? 'Tidak Ada NIP';
+                                    $set('team_idnumber', $leaderIdNumber);
+                                }),
                            
                         ])
                     ]),
@@ -86,20 +101,22 @@ class MonthlyreportResource extends Resource
                                 ->numeric()
                                 ->maxLength(4)
                                 ->required(),
-                            Forms\Components\DatePicker::make('sign_date')
-                                ->label('Tanggal Tanda Tangan')
-                                ->required(),
+                            
                             
                             ])
                         ]),
                     
                         Forms\Components\Group::make()
                         ->schema([
+                           
                             Forms\Components\Section::make()
                                 ->description('Tanda Tangan Pegawai')
                                 ->schema([
+                                    Forms\Components\DatePicker::make('sign_date')
+                                    ->label('Tanggal Tanda Tangan')
+                                    ->required(),
                                     SignaturePad::make('user_sign')
-                                        ->label(__('Tanda Tangan Pegawai'))
+                                        ->label('Tanda Tangan Pegawai')
                                         ->dotSize(2.0)
                                         ->lineMinWidth(0.5)
                                         ->lineMaxWidth(2.5)
@@ -115,8 +132,25 @@ class MonthlyreportResource extends Resource
                             Forms\Components\Section::make()
                             ->description('Tanda Tangan Ketua Tim Kerja')
                             ->schema([
+
+
+                                Forms\Components\TextInput::make('team_leader')
+                                    ->label('Nama Ketua Tim Kerja')
+                                    ->maxLength(255)
+                                    ->disabled(function ($record) {
+                                        $user = auth()->user();
+                                        return !$user->hasRole(['super_admin', 'kepala']); // Hide if the user is not 'super_admin' or 'kepala'
+                                    }),
+                                Forms\Components\TextInput::make('team_idnumber')
+                                    ->label('NIP Ketua Tim Kerja')
+                                    ->maxLength(255)
+                                    ->disabled(function ($record) {
+                                        $user = auth()->user();
+                                        return !$user->hasRole(['super_admin', 'kepala']); // Hide if the user is not 'super_admin' or 'kepala'
+                                    }),
+
                                 SignaturePad::make('team_sign')
-                                    ->label(__('Tanda Tangan Katimja'))
+                                    ->label('Tanda Tangan Katimja')
                                     ->dotSize(2.0)
                                     ->lineMinWidth(0.5)
                                     ->lineMaxWidth(2.5)
@@ -147,7 +181,7 @@ class MonthlyreportResource extends Resource
                                         ->maxLength(255)
                                         ->default('198201312005021001'),
                                     SignaturePad::make('dukman_sign')
-                                        ->label(__('Tanda Tangan Katimja'))
+                                        ->label('Tanda Tangan Katimja Dukmungan Manajemen')
                                         ->dotSize(2.0)
                                         ->lineMinWidth(0.5)
                                         ->lineMaxWidth(2.5)
@@ -190,7 +224,7 @@ class MonthlyreportResource extends Resource
                     ->searchable()
                     ->label('Pegawai')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('team.team_name')
+                Tables\Columns\TextColumn::make('team_name')
                     ->searchable()
                     ->label('Tim Kerja')
                     ->numeric()
@@ -281,8 +315,14 @@ class MonthlyreportResource extends Resource
                             TextEntry::make('user.name')
                                 ->label('Nama')
                                 ->weight(FontWeight::Bold),
-                            TextEntry::make('team.team_name')
+                            TextEntry::make('position.position_name')
+                                ->label('Jabatan')
+                                ->weight(FontWeight::Bold),
+                            TextEntry::make('team_name')
                                 ->label('Tim Kerja')
+                                ->weight(FontWeight::Bold),
+                            TextEntry::make('team_leader')
+                                ->label('Ketua Tim Kerja')
                                 ->weight(FontWeight::Bold),
                         ])->columns(2)
                         ->collapsible(),

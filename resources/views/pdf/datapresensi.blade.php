@@ -113,8 +113,8 @@
                 @else
                     <div class="placeholder"></div>
                 @endif
-                <p>{{ $attendance->user->name }}</p>
-                <p>NIP. {{ $attendance->user->idnumber }}</p>
+                <p>{{ $monthlyreport->team_leader }}</p>
+                <p>NIP. {{ $monthlyreport->team_idnumber }}</p>
             </td>
             <td>
                 <p>PJLP</p>

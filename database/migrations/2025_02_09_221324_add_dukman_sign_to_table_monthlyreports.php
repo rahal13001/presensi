@@ -12,6 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('monthlyreports', function (Blueprint $table) {
+            $table->string('team_leader')->nullable();
+            $table->string('team_idnumber')->nullable();
             $table->string('dukman_leader')->nullable();
             $table->string('dukman_idnumber')->nullable();
             $table->text('dukman_sign')->nullable();

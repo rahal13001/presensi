@@ -13,9 +13,14 @@ class Monthlyreport extends Model
         'month',
         'year',
         'sign_date',
-        'team_id',
+        'team_name',
         'user_sign',
-        'team_sign'
+        'dukman_leader',
+        'dukman_idnumber',
+        'team_leader',
+        'team_idnumber',
+        'team_sign',
+        'dukman_sign',
     ];
 
     
