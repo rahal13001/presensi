@@ -86,7 +86,7 @@ class Presensi extends Component
         if ($schedule) {
             // dd($this->accuracy);
             $attendance = Attendance::where('user_id', Auth::user()->id)
-                 ->whereDate('created_at', date('Y-m-d'))->first();
+                 ->whereDate('start_date', date('Y-m-d'))->first();
             if (!$attendance) {
                 $attendance = Attendance::create([
                     'user_id' => Auth::user()->id,
@@ -97,6 +97,7 @@ class Presensi extends Component
                     'start_latitude' => $this->latitude,
                     'start_longitude' => $this->longitude,
                     'start_time' => Carbon::now()->toTimeString(),
+                    'start_date' => Carbon::now()->toDateString(),        
                     // 'end_time' => Carbon::now()->toTimeString(),
                     'start_accuracy' => $this->accuracy,
                 ]);
@@ -167,8 +168,9 @@ class Presensi extends Component
                     'schedule_longitude' => $schedule->office->longitude,
                     'schedule_start_time' => $schedule->shift->start_time,
                     'schedule_end_time' => $schedule->shift->end_time,
-                    'start_latitude' => $this->latitude,
-                    'start_longitude' => $this->longitude,
+                    'end_latitude' => $this->latitude,
+                    'end_longitude' => $this->longitude,
+                    'end_date' => Carbon::now()->toDateString(),
                     // 'start_time' => Carbon::now()->toTimeString(),
                     'end_time' => Carbon::now()->toTimeString(),
                     'start_accuracy' => $this->accuracy,
@@ -179,6 +181,7 @@ class Presensi extends Component
                     'end_latitude' => $this->latitude,
                     'end_longitude' => $this->longitude,
                     'end_time' => Carbon::now()->toTimeString(),
+                    'end_date' => Carbon::now()->toDateString(),
                     'end_accuracy' => $this->accuracy,
                 ]);
             }

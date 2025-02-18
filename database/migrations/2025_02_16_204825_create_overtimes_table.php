@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('overtimes', function (Blueprint $table) {
             $table->id();
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-            $table->foreign('attendance_id')->references('id')->on('attendances')->onDelete('cascade');
-            $table->foreign('team_id')->references('id')->on('teams')->onDelete('cascade');
+            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
+            $table->foreignId('attendance_id')->constrained('attendances')->cascadeOnDelete();
+            $table->string('team_name');
             $table->date('date');
             $table->time('start_time');
             $table->time('end_time');

@@ -133,8 +133,8 @@
             <!-- Example row -->
             @foreach ($attendances as $index => $attendance)
                 <tr>
-                    <td>{{ \Carbon\Carbon::parse($attendance->created_at)->format('d-m-Y') }}</td>
-                    <td>{{ \Carbon\Carbon::parse($attendance->created_at)->translatedFormat('l') }}</td>
+                    <td>{{ \Carbon\Carbon::parse($attendance->start_date)->format('d-m-Y') }}</td>
+                    <td>{{ \Carbon\Carbon::parse($attendance->start_date)->translatedFormat('l') }}</td>
                     <td>{{ $attendance->start_time }}</td>
                     <td>{{ $attendance->end_time }}</td>
                     <td>{{ $attendance->work_duration}}</td>

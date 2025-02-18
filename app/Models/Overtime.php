@@ -13,7 +13,7 @@ class Overtime extends Model
     //
     protected $fillable = [
         'user_id',
-        'team_id',
+        'team_name',
         'attendance_id',
         'date',
         'start_time',

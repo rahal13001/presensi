@@ -21,8 +21,8 @@ class AttendancereportController extends Controller
 
 
         $attendances = Attendance::where('user_id', $monthlyreport->user_id)->with('user', 'position', 'dailyreports')
-        ->whereYear('created_at', (int) $monthlyreport->year)
-        ->whereMonth('created_at', (int) $monthlyreport->month)
+        ->whereYear('start_date', (int) $monthlyreport->year)
+        ->whereMonth('start_date', (int) $monthlyreport->month)
         ->get()
         ->map(function ($attendance) {
             $scheduleStartTime = Carbon::parse($attendance->schedule_start_time);

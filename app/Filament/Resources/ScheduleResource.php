@@ -116,4 +116,16 @@ class ScheduleResource extends Resource
             'edit' => Pages\EditSchedule::route('/{record}/edit'),
         ];
     }
+
+    public static function getLabel(): ?string
+    {
+        $locale = app()->getLocale();
+        if ($locale === 'id') {
+            return "Jadwal";
+        }
+        else
+        {
+            return "Schedule";
+        }
+    }
 }

@@ -6,6 +6,7 @@ use Auth;
 use Carbon\Carbon;
 use Filament\Forms;
 use Filament\Tables;
+use App\Models\Schedule;
 use Filament\Forms\Form;
 use App\Models\Attendance;
 use Filament\Tables\Table;
@@ -15,11 +16,11 @@ use Filament\Tables\Filters\Filter;
 use Filament\Tables\Grouping\Group;
 use Illuminate\Support\Facades\Date;
 use Maatwebsite\Excel\Facades\Excel;
+
 use Filament\Tables\Actions\BulkAction;
-
 use Filament\Forms\Components\DatePicker;
-use Filament\Tables\Filters\SelectFilter;
 
+use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\AttendanceResource\Pages;
@@ -41,44 +42,101 @@ class AttendanceResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Select::make('user')
-                    ->relationship('user', 'name')
-                    ->disabled()
-                    ->required(),
-                Forms\Components\TextInput::make('schedule_latitude')
-                    ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('schedule_longitude')
-                    ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('schedule_start_time')
-                    ->required(),
-                Forms\Components\TextInput::make('schedule_end_time')
-                    ->required(),
-                Forms\Components\TextInput::make('start_latitude')
-                    ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('start_longitude')
-                    ->required()
-                    ->numeric(),
-                Forms\Components\DateTimePicker::make('created_at')
-                    ->label('Tanggal Masuk')
-                    ->required(),
-                Forms\Components\TextInput::make('start_time')
-                    ->required(),
-                Forms\Components\DateTimePicker::make('updated_at')
-                    ->label('Tanggal Pulang')
-                    ->required(),
-                Forms\Components\TextInput::make('end_time')
-                    ->required(),
-                Forms\Components\TextInput::make('end_latitude')
-                    ->numeric(),
-                Forms\Components\TextInput::make('end_longitude')
-                    ->numeric(),
-                Forms\Components\Toggle::make('not_present')
-                    ->label('Tidak Hadir'),
-                Forms\Components\Toggle::make('is_leave')
-                    ->label('Cuti'),
+                Forms\Components\Group::make()
+                ->schema([
+                    Forms\Components\Section::make()
+                        ->schema([
+                            Forms\Components\Select::make('user_id') 
+                                ->relationship('user', 'name')
+                                ->required()
+                                ->live() // Make it reactive
+                                ->afterStateUpdated(function ($state, $set) {
+                                    if ($state) {
+                                        $schedule = Schedule::where('user_id', $state)->with(['office', 'shift'])->first();
+                                
+                                        // If a schedule exists, set the values from the database
+                                        $set('schedule_latitude', optional($schedule?->office)->latitude ?? -0.8908446);
+                                        $set('schedule_longitude', optional($schedule?->office)->longitude ?? 131.3208711);
+                                
+                                        $set('schedule_start_time', optional($schedule?->shift)->start_time ?? null);
+                                        $set('schedule_end_time', optional($schedule?->shift)->end_time ?? null);
+                                    } else {
+                                        // If no user is selected, use fallback defaults
+                                        $set('schedule_latitude', null);
+                                        $set('schedule_longitude', null);
+                                        $set('schedule_start_time', null);
+                                        $set('schedule_end_time', null);
+                                    }
+                                }),
+
+                            Forms\Components\DatePicker::make('start_date')
+                                ->label('Tanggal Masuk')
+                                ->required(),
+                            Forms\Components\DatePicker::make('end_date')
+                                ->required()
+                                ->label('Tanggal Pulang'),
+                            Forms\Components\Toggle::make('not_present')
+                                ->label('Tidak Hadir'),
+                            Forms\Components\Toggle::make('is_leave')
+                                ->label('Cuti'),
+                        ])
+                ]),
+
+                Forms\Components\Group::make()
+                ->schema([
+                    Forms\Components\Section::make()
+                        ->schema([
+                            Forms\Components\TextInput::make('schedule_latitude')
+                                ->required()
+                                ->numeric(),
+                            
+                            Forms\Components\TextInput::make('schedule_longitude')
+                                ->required()
+                                ->numeric(),
+
+                            Forms\Components\TimePicker::make('schedule_start_time')
+                                ->label('Jadwal Jam Masuk')
+                                ->required(),
+                            
+                            Forms\Components\TextInput::make('schedule_end_time')
+                                ->label('Jadwal Jam Pulang')
+                                ->required(),
+            
+                        ])
+                ]),
+                    
+                
+                Forms\Components\Group::make()
+                ->schema([
+                    Forms\Components\Section::make()
+                        ->schema([
+                            Forms\Components\TextInput::make('start_latitude')
+                                ->label('Latitude Masuk')
+                                ->numeric(),
+                            Forms\Components\TextInput::make('start_longitude')
+                                ->label('Longitude Masuk')
+                                ->numeric(),
+                            Forms\Components\TextInput::make('start_time')
+                                ->label('Jam Masuk'),
+                        ])
+                ]),
+                
+                Forms\Components\Group::make()
+                ->schema([
+                    Forms\Components\Section::make()
+                        ->schema([
+                            Forms\Components\TextInput::make('end_latitude')
+                                ->label('Latitude Pulang')
+                                ->numeric(),
+                            Forms\Components\TextInput::make('end_longitude')
+                                ->label('Longitude Pulang')
+                                ->numeric(),
+                            Forms\Components\TextInput::make('end_time')
+                                ->label('Jam Pulang'),
+                        ])
+                ]),
+
+               
             ]);
     }
 
@@ -93,8 +151,9 @@ class AttendanceResource extends Resource
                 }
                 
             })
+            ->paginated([10, 25, 50, 100])
             ->columns([
-                Tables\Columns\TextColumn::make('created_at')
+                Tables\Columns\TextColumn::make('start_date')
                     ->label('Tanggal')
                     ->date()
                     ->searchable()
@@ -149,36 +208,20 @@ class AttendanceResource extends Resource
                 Group::make('user.name')
                     ->label('Pegawai')
                     ->collapsible(),
-                Group::make('created_at')
+                Group::make('start_date')
                     ->label('Tanggal')
                     ->collapsible(),
                 
             ])
-            ->defaultGroup('created_at')
-            ->defaultSort('created_at', 'desc')
+            ->defaultGroup('start_date')
+            ->defaultSort('start_date', 'asc')
             ->filters([
-                SelectFilter::make('year')
-                ->label('Tahun')
-                ->options(array_combine(
-                    range(Carbon::now()->year - 5, Carbon::now()->year),
-                    range(Carbon::now()->year - 5, Carbon::now()->year)
-                ))
-                ->default(Carbon::now()->year)
-                ->query(fn ($query, $state) => $query->whereYear('created_at', $state)),
 
+                SelectFilter::make('user_id')
+                    ->relationship('user', 'name')
+                    ->label('Pegawai'),
 
-                SelectFilter::make('month')
-                ->label('Bulan')
-                ->options([
-                    '1' => 'Januari', '2' => 'Februari', '3' => 'Maret',
-                    '4' => 'April', '5' => 'Mei', '6' => 'Juni',
-                    '7' => 'Juli', '8' => 'Augustus', '9' => 'September',
-                    '10' => 'Oktober', '11' => 'November', '12' => 'Desember'
-                ])
-                ->default(Carbon::now()->month)
-                ->query(fn ($query, $state) => $query->whereMonth('created_at', $state)),
-
-                Filter::make('created_at')
+                Filter::make('start_date')
                     ->label('Tanggal')
                     ->form(
                         [
@@ -192,16 +235,16 @@ class AttendanceResource extends Resource
                             ->when(
                                 $data['created_from'],
                                 function($query) use ($data) {
-                                    return $query->whereDate('created_at', '>=', $data['created_from']);
+                                    return $query->whereDate('start_date', '>=', $data['created_from']);
                                 }
                             )
                             ->when(
                                 $data['created_until'],
                                 function($query) use ($data) {
-                                    return $query->whereDate('created_at', '<=', $data['created_until']);
+                                    return $query->whereDate('start_date', '<=', $data['created_until']);
                                 }
                             );
-                    })->indicator('created_at'),
+                    })->indicator('start_date'),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
@@ -244,5 +287,17 @@ class AttendanceResource extends Resource
             'create' => Pages\CreateAttendance::route('/create'),
             'edit' => Pages\EditAttendance::route('/{record}/edit'),
         ];
+    }
+
+    public static function getLabel(): ?string
+    {
+        $locale = app()->getLocale();
+        if ($locale === 'id') {
+            return "Kehadiran";
+        }
+        else
+        {
+            return "Attendance";
+        }
     }
 }

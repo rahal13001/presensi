@@ -29,6 +29,8 @@ class Attendance extends Model
         'start_accuracy',
         'end_accuracy',
         'not_present',
+        'start_date',
+        'end_date',
       
     ];
     public function user(): BelongsTo

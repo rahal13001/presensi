@@ -55,7 +55,7 @@ class LongestWorkTimeEmployees extends BaseWidget
                         '10' => 'October', '11' => 'November', '12' => 'December'
                     ])
                     ->default(Carbon::now()->month)
-                    ->query(fn ($query, $state) => $query->whereMonth('created_at', $state)),
+                    ->query(fn ($query, $state) => $query->whereMonth('start_date', $state)),
     
                 SelectFilter::make('year')
                     ->label('Year')
@@ -64,7 +64,7 @@ class LongestWorkTimeEmployees extends BaseWidget
                         range(Carbon::now()->year - 5, Carbon::now()->year)
                     ))
                     ->default(Carbon::now()->year)
-                    ->query(fn ($query, $state) => $query->whereYear('created_at', $state)),
+                    ->query(fn ($query, $state) => $query->whereYear('start_date', $state)),
             ])
             ->defaultPaginationPageOption(5)
             ->defaultSort('total_work_minutes', 'desc');

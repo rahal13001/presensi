@@ -141,4 +141,16 @@ class OfficeResource extends Resource
             'edit' => Pages\EditOffice::route('/{record}/edit'),
         ];
     }
+
+    public static function getLabel(): ?string
+    {
+        $locale = app()->getLocale();
+        if ($locale === 'id') {
+            return "Kantor";
+        }
+        else
+        {
+            return "Office";
+        }
+    }
 }

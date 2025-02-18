@@ -105,4 +105,16 @@ class TeamResource extends Resource
             // 'edit' => Pages\EditTeam::route('/{record}/edit'),
         ];
     }
+
+    public static function getLabel(): ?string
+    {
+        $locale = app()->getLocale();
+        if ($locale === 'id') {
+            return "Tim Kerja";
+        }
+        else
+        {
+            return "Team";
+        }
+    }
 }

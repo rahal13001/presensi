@@ -19,8 +19,8 @@ class AttendancedataController extends Controller
     {
         
         $attendances = Attendance::where('user_id', $monthlyreport->user_id)->with('user', 'position', 'dailyreports')
-        ->whereYear('created_at', (int) $monthlyreport->year)
-        ->whereMonth('created_at', (int) $monthlyreport->month)
+        ->whereYear('start_date', (int) $monthlyreport->year)
+        ->whereMonth('start_date', (int) $monthlyreport->month)
         ->get()
         ->map(function ($attendance) {
             $scheduleStartTime = Carbon::parse($attendance->schedule_start_time);
@@ -35,7 +35,7 @@ class AttendancedataController extends Controller
                     $leave = Leave::where('user_id', $attendance->user_id)->with('typeofleave')
                         ->where('status', 'approved')
                         ->whereDate('start_date', '<=', $attendanceDate)
-                        ->whereDate('end_date', '>=', $attendanceDate)
+                        ->whereDate('start_date', '>=', $attendanceDate)
                         ->first();
           
                     $attendance->typeofleave = $leave ? $leave->typeofleave->leaves_name : 'Tidak Diketahui';

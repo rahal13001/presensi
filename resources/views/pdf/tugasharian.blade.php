@@ -67,14 +67,10 @@
     @foreach ($attendances as $index => $attendance)
         <div class="container @if($index > 0) page-break @endif">
             <h2>LAPORAN HARIAN PJLP {{ strtoupper($attendance->position->position_name) }}</h2>
+            <h2>BULAN {{ strtoupper(\Carbon\Carbon::create()->month($monthlyreport->month)->translatedFormat('F')) }}</h2>
 
             <div class="info">
                 <table>
-                    <tr>
-                        <td><strong>Bulan</strong></td>
-                        <td><strong>:</strong></td>
-                        <td>{{ \Carbon\Carbon::create()->month($monthlyreport->month)->translatedFormat('F') }}</td>
-                    </tr>
                     <tr>
                         <td><strong>Nama PJLP</strong></td>
                         <td><strong>:</strong></td>
@@ -93,7 +89,7 @@
                     <tr>
                         <td><strong>Tanggal</strong></td>
                         <td><strong>:</strong></td>
-                        <td>{{ \Carbon\Carbon::parse($attendance->created_at)->format('d-m-Y') }}</td>
+                        <td>{{ \Carbon\Carbon::parse($attendance->start_date)->format('d-m-Y') }}</td>
                     </tr>
                 </table>
             </div>
