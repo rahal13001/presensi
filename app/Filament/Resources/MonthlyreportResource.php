@@ -122,6 +122,7 @@ class MonthlyreportResource extends Resource
                                         ->lineMaxWidth(2.5)
                                         ->throttle(16)
                                         ->minDistance(5)
+                                        ->exportPenColor('#000')
                                         ->velocityFilterWeight(0.7),
                                 ])
                             
@@ -157,6 +158,7 @@ class MonthlyreportResource extends Resource
                                     ->throttle(16)
                                     ->minDistance(5)
                                     ->velocityFilterWeight(0.7)
+                                    ->exportPenColor('#000')
                                     ->hidden(function ($record) {
                                         $user = auth()->user();
                                         return !$user->hasRole(['super_admin', 'kepala']); // Hide if the user is not 'super_admin' or 'kepala'
@@ -187,6 +189,7 @@ class MonthlyreportResource extends Resource
                                         ->lineMaxWidth(2.5)
                                         ->throttle(16)
                                         ->minDistance(5)
+                                        ->exportPenColor('#000')
                                         ->velocityFilterWeight(0.7),
                                 ])
                                 ->hidden(function ($record) {
