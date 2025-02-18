@@ -32,6 +32,7 @@ class AdminPanelProvider extends PanelProvider
         return $panel
             ->default()
             ->id('admin')
+            ->sidebarCollapsibleOnDesktop()
             ->path('admin')
             ->login(Login::class)
             ->colors([
@@ -39,9 +40,13 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
+            ->brandLogo(asset('img/logopresensiw.png'))
+            ->darkModeBrandLogo(asset('img/logopresensib.png'))
+            ->brandLogoHeight('3rem')
             ->pages([
                 Dashboard::class,
             ])
+            ->favicon(asset('img/logoweb.png'))
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
                 // Widgets\AccountWidget::class,
@@ -77,13 +82,6 @@ class AdminPanelProvider extends PanelProvider
                 ]),
                 FilamentErrorPagesPlugin::make(),
             ])
-            ->viteTheme('resources/css/filament/admin/theme.css')
-            ->navigationGroups([
-                'Sekolah Kedinasan',
-                'Pembelajaran',
-                'Penjualan',
-                'Tryout',
-                'Management Super Admin',
-            ]);
+            ->viteTheme('resources/css/filament/admin/theme.css');
     }
 }
