@@ -94,10 +94,38 @@ class Shiftpresensi extends Component
             return;
         }
 
+            //check does the employe already start work
+            $attendance = Attendance::where('user_id', Auth::user()->id)
+                ->where('start_date', Carbon::now()->toDateString())
+                ->whereNull('end_time') // ✅ Corrected null check
+                ->first();
         
-            // dd($this->accuracy);
-            // $attendance = Attendance::where('user_id', Auth::user()->id)->first();
-            Attendance::create([
+            // Check if the employee is continuing the shift
+            $continueAttendance = Attendance::where('user_id', Auth::user()->id)
+                ->where('start_date', Carbon::now()->toDateString())
+                ->whereNotNull('end_time') // ✅ Corrected NOT NULL check
+                ->first();
+
+            $alreadyContinued = Attendance::where('user_id', Auth::user()->id)
+                ->where('start_date', Carbon::now()->toDateString())
+                ->whereNotNull('end_time') // ✅ Corrected NOT NULL check
+                ->exists();
+
+            
+
+            if (!$attendance) {
+
+                // ✅ Determine the correct end_date
+                $startSchedule = Carbon::parse($shiftschedule->shift->start_time);
+                $endSchedule = Carbon::parse($shiftschedule->shift->end_time);
+
+                // If shift ends the next day, add +1 day to `end_date`
+                $endDate = ($endSchedule->lt($startSchedule)) 
+                    ? Carbon::now()->addDay()->toDateString() // ✅ Add 1 day if shift ends after midnight
+                    : Carbon::now()->toDateString(); // ✅ Otherwise, same day
+
+                // ✅ No attendance record -> Start work
+                Attendance::create([
                     'user_id' => Auth::user()->id,
                     'schedule_latitude' => $shiftschedule->office->latitude,
                     'schedule_longitude' => $shiftschedule->office->longitude,
@@ -107,26 +135,44 @@ class Shiftpresensi extends Component
                     'start_longitude' => $this->longitude,
                     'start_time' => Carbon::now()->toTimeString(),
                     'start_date' => Carbon::now()->toDateString(),
-                    // 'end_time' => Carbon::now()->toTimeString(),
+                    'end_date' => $endDate,
                     'start_accuracy' => $this->accuracy,
                 ]);
-            
-            // else {
-            //     $attendance->update([
-            //         'end_latitude' => $this->latitude,
-            //         'end_longitude' => $this->longitude,
-            //         'end_time' => Carbon::now()->toTimeString(),
-            //         'end_accuracy' => $this->accuracy,
-            //     ]);
-            // }
-            
-            return redirect('admin/attendances');
+            } elseif ($continueAttendance) {
+                 // ✅ If the security officer already continued their shift, REDIRECT instead of recreating
+                if ($alreadyContinued) {
+                    return redirect('admin/attendances');
+                }
 
-            // return redirect()->route('presensi', [
-            //     'schedule' => $schedule,
-            //     'insideRadius' => false
-            // ]);
-            
+                 // ✅ Determine the correct end_date for continuing shift
+                $startSchedule = Carbon::parse($shiftschedule->shift->start_time);
+                $endSchedule = Carbon::parse($shiftschedule->shift->end_time);
+
+                $endDate = ($endSchedule->lt($startSchedule)) 
+                    ? Carbon::now()->addDay()->toDateString() 
+                    : Carbon::now()->toDateString();
+
+                // ✅ Continuing the shift -> Start a new record for the shift
+                Attendance::create([
+                    'user_id' => Auth::user()->id,
+                    'schedule_latitude' => $shiftschedule->office->latitude,
+                    'schedule_longitude' => $shiftschedule->office->longitude,
+                    'schedule_start_time' => $shiftschedule->shift->start_time,
+                    'schedule_end_time' => $shiftschedule->shift->end_time,
+                    'start_latitude' => $this->latitude,
+                    'start_longitude' => $this->longitude,
+                    'start_time' => $shiftschedule->shift->start_time,
+                    'start_date' => Carbon::now()->toDateString(),
+                    'end_date' => $endDate,
+                    'start_accuracy' => $this->accuracy,
+                ]);
+            } 
+            else{
+                 // ✅ Already attended & not continuing shift -> Redirect
+                return redirect('admin/attendances');
+            }
+
+            return redirect('admin/attendances');
         
     }
 
@@ -167,8 +213,13 @@ class Shiftpresensi extends Component
 
         
             // dd($this->accuracy);
-            // $attendance = Attendance::where('user_id', Auth::user()->id)->first();
-            Attendance::create([
+            $attendance = Attendance::where('user_id', Auth::user()->id)
+                ->where('end_date', Carbon::now()->toDateString())
+                ->where('end_time', null)
+                ->first();
+
+            if(!$attendance){
+                Attendance::create([
                     'user_id' => Auth::user()->id,
                     'schedule_latitude' => $shiftschedule->office->latitude,
                     'schedule_longitude' => $shiftschedule->office->longitude,
@@ -177,19 +228,19 @@ class Shiftpresensi extends Component
                     'end_latitude' => $this->latitude,
                     'end_longitude' => $this->longitude,
                     'end_date' => Carbon::now()->toDateString(),
-                    // 'start_time' => Carbon::now()->toTimeString(),
                     'end_time' => Carbon::now()->toTimeString(),
-                    'start_accuracy' => $this->accuracy,
+                    'end_accuracy' => $this->accuracy,
                 ]);
-            
-            // else {
-            //     $attendance->update([
-            //         'end_latitude' => $this->latitude,
-            //         'end_longitude' => $this->longitude,
-            //         'end_time' => Carbon::now()->toTimeString(),
-            //         'end_accuracy' => $this->accuracy,
-            //     ]);
-            // }
+            }
+            else {
+                $attendance->update([
+                    'end_latitude' => $this->latitude,
+                    'end_longitude' => $this->longitude,
+                    'end_time' => Carbon::now()->toTimeString(),
+                    'end_date'  =>Carbon::now()->toDateString(),
+                    'end_accuracy' => $this->accuracy,
+                ]);
+            }
             
             return redirect('admin/attendances');
     }

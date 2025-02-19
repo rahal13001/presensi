@@ -97,7 +97,8 @@ class Presensi extends Component
                     'start_latitude' => $this->latitude,
                     'start_longitude' => $this->longitude,
                     'start_time' => Carbon::now()->toTimeString(),
-                    'start_date' => Carbon::now()->toDateString(),        
+                    'start_date' => Carbon::now()->toDateString(),     
+                    'end_date' => Carbon::now()->toDateString(),   
                     // 'end_time' => Carbon::now()->toTimeString(),
                     'start_accuracy' => $this->accuracy,
                 ]);
@@ -170,6 +171,7 @@ class Presensi extends Component
                     'schedule_end_time' => $schedule->shift->end_time,
                     'end_latitude' => $this->latitude,
                     'end_longitude' => $this->longitude,
+                    'start_date' => Carbon::now()->toDateString(),
                     'end_date' => Carbon::now()->toDateString(),
                     // 'start_time' => Carbon::now()->toTimeString(),
                     'end_time' => Carbon::now()->toTimeString(),
