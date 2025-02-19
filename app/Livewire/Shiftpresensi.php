@@ -215,7 +215,7 @@ class Shiftpresensi extends Component
             // dd($this->accuracy);
             $attendance = Attendance::where('user_id', Auth::user()->id)
                 ->where('end_date', Carbon::now()->toDateString())
-                ->where('end_time', null)
+                ->whereNull('end_time') // ✅ Corrected null check
                 ->first();
 
             if(!$attendance){

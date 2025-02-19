@@ -214,7 +214,7 @@ class AttendanceResource extends Resource
                 
             ])
             ->defaultGroup('start_date')
-            ->defaultSort('start_date', 'asc')
+            ->defaultSort('start_date', 'desc')
             ->filters([
 
                 SelectFilter::make('user_id')
