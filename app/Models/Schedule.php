@@ -40,6 +40,11 @@ class Schedule extends Model
         return $this->belongsTo(Office::class);
     }
 
+    public function wfaday()
+    {
+        return $this->hasMany(Wfaday::class);
+    }
+
     // public function position(): \Znck\Eloquent\Relations\BelongsToThrough
     // {
     //     return $this->belongsToThrough(Position::class, User::class);

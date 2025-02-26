@@ -41,14 +41,44 @@ class ScheduleResource extends Resource
                                 Forms\Components\Select::make('shift_id')
                                     ->relationship('shift', 'name')
                                     ->required(),
+                                Forms\Components\Toggle::make('is_wfa'),
+
                                 Forms\Components\Select::make('office_id')
                                     ->relationship('office', 'name')
                                     ->required(),
-                                Forms\Components\Toggle::make('is_wfa')
+
                             ])
-                    ])
+                ]),
+                Forms\Components\Group::make()
+                    ->schema([
+                        Forms\Components\Section::make()
+                            ->schema([
+                                Forms\Components\Repeater::make('wfaday')
+                                ->label('Hari WFA')
+                                ->relationship('wfaday') // ✅ Use the relationship correctly
+                                ->schema([
+                                    Forms\Components\Select::make('day_name')
+                                        ->label('Hari')
+                                        ->options([
+                                            'Monday' => 'Senin',
+                                            'Tuesday' => 'Selasa',
+                                            'Wednesday' => 'Rabu',
+                                            'Thursday' => 'Kamis',
+                                            'Friday' => 'Jumat',
+                                            'Saturday' => 'Sabtu',
+                                            'Sunday' => 'Minggu',
+                                        ])
+                                        ->required(),
+                                ])
+
+                            ])
+                ]),
+
+          
+                        
                 
-            ]);
+         ]);
+
     }
 
     public static function table(Table $table): Table

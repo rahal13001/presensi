@@ -36,6 +36,8 @@ class AttendanceResource extends Resource
 
     protected static ?string $navigationGroup = 'Attendance Management';
 
+    protected static ?string $slug = 'kehadiran';
+
     protected static ?int $navigationSort = 7;
     
     public static function form(Form $form): Form
@@ -204,6 +206,7 @@ class AttendanceResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
                 
             ])
+            ->defaultSort('start_date', 'desc')
             ->groups([
                 Group::make('user.name')
                     ->label('Pegawai')
@@ -214,7 +217,7 @@ class AttendanceResource extends Resource
                 
             ])
             ->defaultGroup('start_date')
-            ->defaultSort('start_date', 'desc')
+           
             ->filters([
 
                 SelectFilter::make('user_id')

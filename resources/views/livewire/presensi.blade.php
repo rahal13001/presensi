@@ -8,11 +8,15 @@
                          <p><strong>Nama Pegawai : </strong> {{Auth::user()->name}}</p>
                          <p><strong>Kantor : </strong>{{$schedule->office->name}}</p>
                          <p><strong>Shift : </strong>{{$schedule->shift->name}} ({{$schedule->shift->start_time}} - {{$schedule->shift->end_time}}) WIT</p>
-                         @if($schedule->is_wfa)
-                             <p class="text-green-500"><strong>Status : </strong>WFA</p>
-                         @else
-                             <p><strong>Status : </strong>WFO</p>
-                         @endif
+                         <p>
+                            <strong>Status : </strong> 
+                            @if($isWFA)
+                                <span class="text-green-500">WFA</span>
+                            @else
+                                <span>WFO</span>
+                            @endif
+                        </p>
+                        <p><strong>Debug WFA Value: </strong> {{ json_encode($isWFA) }}</p>
                      </div>
                      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
                          <div class="bg-gray-100 p-4 rounded-lg">
@@ -152,9 +156,10 @@
             }
  
          function isWithinRadius(lat, lng, center, radius) {
-             const is_wfa = "{{$schedule->is_wfa}}"
+             const is_wfa = "{{$isWFA}}"
              if (is_wfa) {
                  return true;
+
              } else {
                  let distance = map.distance([lat, lng], center);
                  return distance <= radius;

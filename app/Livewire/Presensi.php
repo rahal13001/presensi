@@ -2,12 +2,13 @@
 
 namespace App\Livewire;
 
+use App\Models\Leave;
 use Livewire\Component;
+// use Auth;
 use App\Models\Schedule;
 use App\Models\Attendance;
-// use Auth;
-use App\Models\Leave;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 
 class Presensi extends Component
@@ -30,20 +31,42 @@ class Presensi extends Component
         }
 
     }
-    public function render()
+
+      public function render()
     {
        
-        //ambil user ID dari auth
-        $schedule = Schedule::where('user_id', Auth::user()->id)->first();
-
+        //ambil schedule dari auth
+        $schedule = Schedule::where('user_id', Auth::user()->id)->with('wfaday')->first();
+            if (!$schedule) {
+                return;
+        }
         $attendance = Attendance::where('user_id', Auth::user()->id)
                             ->whereDate('created_at', date('Y-m-d'))->first();
+
+
         // dd($schedule);
+
+      
+
+        $schedule = Schedule::where('user_id', Auth::user()->id)->with('wfaday')->first();
+        if (!$schedule) {
+            return;
+        }
+
+        $today = Carbon::now()->format('l'); // ✅ Example: "Wednesday"
+        $wfaDays = $schedule->wfaday->pluck('day_name')->toArray(); // ✅ Get all WFA days
+
+        // ✅ If today's day is in WFA days OR is_wfa is already set, set isWFA = true
+        $isWFA = in_array( $today, $wfaDays) || $schedule->is_wfa;
+
+        // dump($today, $wfaDays);
+        // die();
         
         return view('livewire.presensi', [
             'schedule' => $schedule,
             'insideRadius' => $this->insideRadius,
-            'attendance' => $attendance
+            'attendance' => $attendance,
+            'isWFA' => $isWFA, // ✅ Pass to the Blade view
         ]);
     }
 
