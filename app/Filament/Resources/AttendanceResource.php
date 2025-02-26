@@ -36,7 +36,7 @@ class AttendanceResource extends Resource
 
     protected static ?string $navigationGroup = 'Attendance Management';
 
-    protected static ?string $slug = 'kehadiran';
+    // protected static ?string $slug = 'kehadiran';
 
     protected static ?int $navigationSort = 7;
     
