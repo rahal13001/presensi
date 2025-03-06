@@ -4,6 +4,7 @@ namespace App\Exports;
 
 use Carbon\Carbon;
 use App\Models\Attendance;
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Schema;
 use Maatwebsite\Excel\Events\AfterSheet;
 use Maatwebsite\Excel\Concerns\FromQuery;
@@ -24,7 +25,7 @@ class AttendanceExport implements FromCollection, WithHeadings, WithMapping, Sho
 
     public function collection()
     {
-        return Attendance::whereIn('id', $this->selectedIds)->with('user', 'position')->get();
+        return Attendance::whereIn('id', $this->selectedIds)->with('user', 'position', 'dailyreports')->get();
     }
 
     public function headings(): array
@@ -48,6 +49,7 @@ class AttendanceExport implements FromCollection, WithHeadings, WithMapping, Sho
             'Durasi Terlambat',
             'Cuti',
             'Kehadiran',
+            'Laporan Harian',
         ];
     }
 
@@ -72,7 +74,19 @@ class AttendanceExport implements FromCollection, WithHeadings, WithMapping, Sho
             $this->calculateLateDuration($record),
             $record->is_leave ? 'Ya' : 'Tidak',
             $this->isPresent($record),
+            $this->dailyReport($record),
         ];
+    }
+
+    protected function dailyReport($record)
+    {
+        if ($record->dailyreports->isNotEmpty()) {
+            return $record->dailyreports
+                ->take(10) // ✅ Limit maximum links to 10
+                ->map(fn($dailyreport) => "https://presensi.timurbersinar.com/" . $dailyreport->id . "/" . Str::slug($dailyreport->title))
+                ->implode(', '); // ✅ Separate by commas
+        }
+        return ''; // ✅ Return empty string if no reports
     }
 
     protected function isPresent($record)
@@ -146,8 +160,8 @@ class AttendanceExport implements FromCollection, WithHeadings, WithMapping, Sho
                     
                     // Insert group header
                     $sheet->setCellValue("A{$row}", "Pegawai: {$userName}");
-                    $sheet->mergeCells("A{$row}:R{$row}");
-                    $sheet->getStyle("A{$row}:J{$row}")->applyFromArray([
+                    $sheet->mergeCells("A{$row}:S{$row}");
+                    $sheet->getStyle("A{$row}:S{$row}")->applyFromArray([
                         'font' => ['bold' => true],
                         'fill' => [
                             'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
