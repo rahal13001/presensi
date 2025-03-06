@@ -18,8 +18,8 @@
     <div class="max-w-2xl mx-auto px-4 pt-12">
         <!-- Header -->
         <header class="text-center mb-8">
-            <h1 class="text-4xl font-bold tracking-wide">Laporan Harian</h1>
-            <p class="text-lg text-gray-600 mt-2">Tanggal {{ \Carbon\Carbon::parse($dailyreport->attendance->start_date)->locale('id')->translatedFormat('d F Y') }}</p>
+            <h1 class="text-3xl font-bold tracking-wide">Laporan Harian</h1>
+            <p class="text-md text-gray-600 mt-2">Tanggal {{ \Carbon\Carbon::parse($dailyreport->attendance->start_date)->locale('id')->translatedFormat('d F Y') }}</p>
         </header>
 
         <article class="text-lg leading-relaxed text-gray-800 mt-6">
