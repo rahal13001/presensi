@@ -83,7 +83,7 @@ class AttendanceExport implements FromCollection, WithHeadings, WithMapping, Sho
         if ($record->dailyreports->isNotEmpty()) {
             return $record->dailyreports
                 ->take(10) // ✅ Limit maximum links to 10
-                ->map(fn($dailyreport) => "https://presensi.timurbersinar.com/" . $dailyreport->id . "/" . Str::slug($dailyreport->title))
+                ->map(fn($dailyreport) => "https://presensi.timurbersinar.com/laporanharian/" . $dailyreport->id . "/" . Str::slug($dailyreport->title))
                 ->implode(', '); // ✅ Separate by commas
         }
         return ''; // ✅ Return empty string if no reports
