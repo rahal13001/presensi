@@ -257,10 +257,10 @@ class AttendanceResource extends Resource
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-
                     BulkAction::make('export')
                     ->label('Export Selected')
+                    ->icon('heroicon-o-document-arrow-down')
+                    ->color('success') // ✅ Makes icon & text green
                     ->action(function ($records) {
                         // Convert the collection to an array of IDs
                         $selectedIds = $records->pluck('id')->toArray();
@@ -271,6 +271,10 @@ class AttendanceResource extends Resource
                         // Download the export file
                         return \Maatwebsite\Excel\Facades\Excel::download($export, 'attendance-' . date('Y-m-d') . '.xlsx');
                     }),
+                    
+                    Tables\Actions\DeleteBulkAction::make(),
+
+                    
                     
                 ]),
             ]);
