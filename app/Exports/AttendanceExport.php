@@ -58,7 +58,7 @@ class AttendanceExport implements FromCollection, WithHeadings, WithMapping, Sho
         return [
             $record->created_at ? $record->created_at->format('Y-m-d') : '',
             $record->user->name ?? '',
-            $record->user->idnumber ?? '',
+            isset($record->user->idnumber) ? (string) $record->user->idnumber : '',
             $record->position->position_name ?? '',
             $record->schedule_start_time ?? '',
             $record->start_time ?? '',
