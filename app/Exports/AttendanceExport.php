@@ -13,8 +13,10 @@ use Maatwebsite\Excel\Concerns\WithMapping;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
+use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
+use Maatwebsite\Excel\Concerns\WithColumnFormatting;
 
-class AttendanceExport implements FromCollection, WithHeadings, WithMapping, ShouldAutoSize, WithEvents
+class AttendanceExport implements FromCollection, WithHeadings, WithMapping, ShouldAutoSize, WithEvents, WithColumnFormatting
 {
     protected $selectedIds;
 
@@ -58,7 +60,8 @@ class AttendanceExport implements FromCollection, WithHeadings, WithMapping, Sho
         return [
             $record->created_at ? $record->created_at->format('Y-m-d') : '',
             $record->user->name ?? '',
-            isset($record->user->idnumber) ? (string) $record->user->idnumber : '',
+            // isset($record->user->idnumber) ? "'".$record->user->idnumber : '',
+            (string) ($record->user->idnumber ?? ''),
             $record->position->position_name ?? '',
             $record->schedule_start_time ?? '',
             $record->start_time ?? '',
@@ -184,6 +187,13 @@ class AttendanceExport implements FromCollection, WithHeadings, WithMapping, Sho
                     $row++; // Add an empty row between groups
                 }
             },
+        ];
+    }
+
+    public function columnFormats(): array
+    {
+        return [
+            'B' => NumberFormat::FORMAT_TEXT, // ✅ Force column B (idnumber) to be text
         ];
     }
 }
