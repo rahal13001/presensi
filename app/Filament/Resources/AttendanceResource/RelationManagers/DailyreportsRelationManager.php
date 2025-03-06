@@ -8,6 +8,8 @@ use Filament\Tables;
 use Filament\Forms\Form;
 use App\Models\Attendance;
 use Filament\Tables\Table;
+use App\Models\Dailyreport;
+use Illuminate\Support\Str;
 use Filament\Forms\Components\FileUpload;
 use Illuminate\Database\Eloquent\Builder;
 use AmidEsfahani\FilamentTinyEditor\TinyEditor;
@@ -111,6 +113,9 @@ class DailyreportsRelationManager extends RelationManager
             ->actions([
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
+                Tables\Actions\Action::make('Lihat')
+                    ->url(fn (DailyReport $record) => route('laporanharian', ['dailyreport' => $record->id, 'title' => Str::slug($record->title)])) // ✅ Correct way
+                    ->openUrlInNewTab() // Optional: Opens in a new tab
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

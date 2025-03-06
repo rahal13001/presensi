@@ -6900,16 +6900,16 @@
         },
         {
             "name": "staudenmeir/belongs-to-through",
-            "version": "v2.16.3",
+            "version": "v2.16.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/staudenmeir/belongs-to-through.git",
-                "reference": "33f8b614bf2e84bf818911981326654a4a0c8741"
+                "reference": "451496e4272c11d87b404791acdd352c606f29c0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/staudenmeir/belongs-to-through/zipball/33f8b614bf2e84bf818911981326654a4a0c8741",
-                "reference": "33f8b614bf2e84bf818911981326654a4a0c8741",
+                "url": "https://api.github.com/repos/staudenmeir/belongs-to-through/zipball/451496e4272c11d87b404791acdd352c606f29c0",
+                "reference": "451496e4272c11d87b404791acdd352c606f29c0",
                 "shasum": ""
             },
             "require": {
@@ -6955,7 +6955,7 @@
             "description": "Laravel Eloquent BelongsToThrough relationships",
             "support": {
                 "issues": "https://github.com/staudenmeir/belongs-to-through/issues",
-                "source": "https://github.com/staudenmeir/belongs-to-through/tree/v2.16.3"
+                "source": "https://github.com/staudenmeir/belongs-to-through/tree/v2.16.4"
             },
             "funding": [
                 {
@@ -6963,7 +6963,7 @@
                     "type": "custom"
                 }
             ],
-            "time": "2025-02-02T11:46:25+00:00"
+            "time": "2025-02-20T19:20:43+00:00"
         },
         {
             "name": "symfony/clock",

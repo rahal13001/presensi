@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Dailyreport extends Model
 {
+    use \Znck\Eloquent\Traits\BelongsToThrough;
     protected $fillable = [
         'title',
         'description',
@@ -19,5 +20,10 @@ class Dailyreport extends Model
     public function attendance()
     {
         return $this->belongsTo(Attendance::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsToThrough(User::class, Attendance::class);
     }
 }
