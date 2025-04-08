@@ -215,9 +215,7 @@ class AttendanceResource extends Resource
                     ->label('Tanggal')
                     ->collapsible(),
                 
-            ])
-            ->defaultGroup('start_date')
-           
+            ])           
             ->filters([
 
                 SelectFilter::make('user_id')
