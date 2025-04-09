@@ -137,18 +137,11 @@ class MonthlyreportResource extends Resource
 
                                 Forms\Components\TextInput::make('team_leader')
                                     ->label('Nama Ketua Tim Kerja')
-                                    ->maxLength(255)
-                                    ->disabled(function ($record) {
-                                        $user = auth()->user();
-                                        return !$user->hasRole(['super_admin', 'kepala']); // Hide if the user is not 'super_admin' or 'kepala'
-                                    }),
+                                    ->maxLength(255),
+                                 
                                 Forms\Components\TextInput::make('team_idnumber')
                                     ->label('NIP Ketua Tim Kerja')
-                                    ->maxLength(255)
-                                    ->disabled(function ($record) {
-                                        $user = auth()->user();
-                                        return !$user->hasRole(['super_admin', 'kepala']); // Hide if the user is not 'super_admin' or 'kepala'
-                                    }),
+                                    ->maxLength(255),
 
                                 SignaturePad::make('team_sign')
                                     ->label('Tanda Tangan Katimja')
