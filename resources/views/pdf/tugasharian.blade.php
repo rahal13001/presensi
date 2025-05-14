@@ -67,7 +67,8 @@
     @foreach ($attendances as $index => $attendance)
         <div class="container @if($index > 0) page-break @endif">
             <h2>LAPORAN HARIAN PJLP {{ strtoupper($attendance->position->position_name) }}</h2>
-            <h2>BULAN {{ strtoupper(\Carbon\Carbon::create()->month($monthlyreport->month)->translatedFormat('F')) }}</h2>
+            <h2>BULAN {{ strtoupper(\Carbon\Carbon::create()->month((int)$monthlyreport->month)->translatedFormat('F')) }}</h2>
+            {{-- <h2>BULAN {{ $monthlyreport->month }}</h2> --}}
 
             <div class="info">
                 <table>
