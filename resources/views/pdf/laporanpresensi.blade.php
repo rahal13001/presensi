@@ -95,7 +95,7 @@
             <tr>
                 <td><strong>Bulan</strong></td>
                 <td><strong>:</strong></td>
-                <td>{{ \Carbon\Carbon::create()->month($monthlyreport->month)->translatedFormat('F') }} {{$monthlyreport->year}}</td>
+                <td>{{ \Carbon\Carbon::create()->month((int)$monthlyreport->month)->translatedFormat('F') }} {{$monthlyreport->year}}</td>
             </tr>
             <tr>
                 <td><strong>Tanggal</strong></td>
