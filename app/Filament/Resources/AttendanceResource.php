@@ -189,8 +189,8 @@ class AttendanceResource extends Resource
                 Tables\Columns\TextColumn::make('end_time')
                     ->label('Waktu Pulang'),
                 
-                Tables\Columns\BooleanColumn::make('is_report')
-                    ->label('Laporan')
+                Tables\Columns\BooleanColumn::make('status')
+                    ->label('Status')
                     ->trueIcon('heroicon-o-check-circle')   // Green check icon for true
                     ->falseIcon('heroicon-o-x-circle')      // Red cross icon for false
                     ->trueColor('success')                  // Green color for true
