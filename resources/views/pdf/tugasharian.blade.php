@@ -90,8 +90,8 @@
                     <tr>
                         <td><strong>Tanggal</strong></td>
                         <td><strong>:</strong></td>
-                        {{-- <td>{{ \Carbon\Carbon::parse($attendance->start_date)->format('d-m-Y') }}</td> --}}
-                        <td><strong>{{$attendance->start_date}}</strong></td>
+                        <td>{{ \Carbon\Carbon::parse((int)$attendance->start_date)->format('d-m-Y') }}</td>
+                        {{-- <td><strong>{{$attendance->start_date}}</strong></td> --}}
                     </tr>
                 </table>
             </div>
