@@ -14,6 +14,8 @@ class Dailyreport extends Model
         'note',
         'dokumentasi1',
         'dokumentasi2',
+        'documentation3',
+        'documentation4',
         'attendance_id',
     ];
 

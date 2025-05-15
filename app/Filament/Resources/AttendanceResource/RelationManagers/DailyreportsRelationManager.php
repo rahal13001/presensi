@@ -10,6 +10,7 @@ use App\Models\Attendance;
 use Filament\Tables\Table;
 use App\Models\Dailyreport;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Auth;
 use Filament\Forms\Components\FileUpload;
 use Illuminate\Database\Eloquent\Builder;
 use AmidEsfahani\FilamentTinyEditor\TinyEditor;
@@ -86,6 +87,38 @@ class DailyreportsRelationManager extends RelationManager
                     ->openable()
                     ->disk('public')
                     ->directory('dokumentasi')
+                    ->disabled(!$isAllowedToFill)
+                    ->visibility('public')
+                    ->maxSize(5000)
+                    ->image()
+                    ->columnSpan('full'),
+                FileUpload::make('documentation3')
+                    ->label('Dokumentasi 3')
+                    ->openable()
+                    ->disk('public')
+                    ->directory('dokumentasi_supir')
+                    ->disabled(!$isAllowedToFill)
+                    ->visibility('public')
+                    ->maxSize(5000)
+                    ->visible(function(){
+                        if (Auth::user()->hasAnyRole(['sopir', 'admin','super_admin'])) {
+                            return true;
+                        }
+                     }    
+                    )
+                    ->image()
+                    ->columnSpan('full'),
+                FileUpload::make('documentation4')
+                    ->label('Dokumentasi 4')
+                    ->openable()
+                    ->disk('public')
+                    ->visible(function(){
+                        if (Auth::user()->hasAnyRole(['sopir', 'admin','super_admin'])) {
+                            return true;
+                        }
+                     }    
+                    )
+                    ->directory('dokumentasi_supir')
                     ->disabled(!$isAllowedToFill)
                     ->visibility('public')
                     ->maxSize(5000)
