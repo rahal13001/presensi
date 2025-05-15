@@ -65,6 +65,7 @@ class UserResource extends Resource
                                     ->relationship('roles', 'name', fn ($query) => 
                                         $query->when(!Auth::user()->hasRole('super_admin'), fn ($q) => $q->where('name', '!=', 'super_admin'))
                                     )
+                                    ->multiple()
                                     ->preload()
                                     ->searchable()
                                     ->label('Roles'),
