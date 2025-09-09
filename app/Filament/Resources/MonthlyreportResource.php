@@ -30,7 +30,7 @@ class MonthlyreportResource extends Resource
 {
     protected static ?string $model = Monthlyreport::class;
 
-    
+
     protected static ?string $navigationGroup = 'Monthly Report';
 
     protected static ?string $navigationIcon = 'heroicon-o-document-chart-bar';
@@ -71,7 +71,7 @@ class MonthlyreportResource extends Resource
                                     $leaderIdNumber = $team?->user?->idnumber ?? 'Tidak Ada NIP';
                                     $set('team_idnumber', $leaderIdNumber);
                                 }),
-                           
+
                         ])
                     ]),
 
@@ -101,14 +101,14 @@ class MonthlyreportResource extends Resource
                                 ->numeric()
                                 ->maxLength(4)
                                 ->required(),
-                            
-                            
+
+
                             ])
                         ]),
-                    
+
                         Forms\Components\Group::make()
                         ->schema([
-                           
+
                             Forms\Components\Section::make()
                                 ->description('Tanda Tangan Pegawai')
                                 ->schema([
@@ -125,7 +125,7 @@ class MonthlyreportResource extends Resource
                                         ->exportPenColor('#000')
                                         ->velocityFilterWeight(0.7),
                                 ])
-                            
+
                         ]),
 
                         Forms\Components\Group::make()
@@ -138,7 +138,7 @@ class MonthlyreportResource extends Resource
                                 Forms\Components\TextInput::make('team_leader')
                                     ->label('Nama Ketua Tim Kerja')
                                     ->maxLength(255),
-                                 
+
                                 Forms\Components\TextInput::make('team_idnumber')
                                     ->label('NIP Ketua Tim Kerja')
                                     ->maxLength(255),
@@ -157,9 +157,9 @@ class MonthlyreportResource extends Resource
                                         return !$user->hasRole(['super_admin', 'kepala']); // Hide if the user is not 'super_admin' or 'kepala'
                                     }),
 
-                                
+
                             ])
-                            
+
                         ]),
 
                         Forms\Components\Group::make()
@@ -170,11 +170,11 @@ class MonthlyreportResource extends Resource
                                     Forms\Components\TextInput::make('dukman_leader')
                                         ->label('Nama Katimja Dukungan Manajemen')
                                         ->maxLength(255)
-                                        ->default('Hendrik Sombo, S.Pi., M.Si.'),
+                                        ->default('Eni Rochmawati, S.M.'),
                                     Forms\Components\TextInput::make('dukman_idnumber')
                                         ->label('NIP Katimja Dukungan Manajemen')
                                         ->maxLength(255)
-                                        ->default('198201312005021001'),
+                                        ->default('198310212008012005'),
                                     SignaturePad::make('dukman_sign')
                                         ->label('Tanda Tangan Katimja Dukmungan Manajemen')
                                         ->dotSize(2.0)
@@ -189,9 +189,9 @@ class MonthlyreportResource extends Resource
                                     $user = auth()->user();
                                         return !$user->hasRole(['super_admin', 'kepala']);
                                 })
-                            
+
                         ]),
-            
+
             ]);
     }
 
@@ -199,9 +199,9 @@ class MonthlyreportResource extends Resource
     {
         return $table
             ->modifyQueryUsing(function (Builder $query) {
-                
+
                 $is_user = Auth::user()->hasRole('user');
-                
+
 
                 if ($is_user) {
                     $query->where('monthlyreports.user_id', Auth::user()->id)
@@ -211,7 +211,7 @@ class MonthlyreportResource extends Resource
                     $query->orderBy('year', 'desc')
                           ->orderBy('month', 'desc');
                 }
-                
+
             })
             ->columns([
                 TextColumn::make('No')
@@ -247,7 +247,7 @@ class MonthlyreportResource extends Resource
                     ->falseIcon('heroicon-o-x-circle')      // Red cross icon
                     ->trueColor('success')                  // Green color for true
                     ->falseColor('danger'),
-                
+
                 Tables\Columns\BooleanColumn::make('dukman_sign')
                     ->label('TTD Dukman')
                     ->getStateUsing(fn ($record) => !is_null($record->dukman_sign)) // Convert null to false
@@ -345,7 +345,7 @@ class MonthlyreportResource extends Resource
                             ImageEntry::make('user_sign')
                                 ->height(150)
                                 ->label('Tanda Tangan Penyusun'),
-                            
+
                         ])->columns(2)
                     ->collapsible(),
                     Section::make('Pengesahan Dukungan Manajemen')
