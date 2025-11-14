@@ -9,7 +9,7 @@
                          <p><strong>Kantor : </strong>{{$schedule->office->name}}</p>
                          <p><strong>Shift : </strong>{{$schedule->shift->name}} ({{$schedule->shift->start_time}} - {{$schedule->shift->end_time}}) WIT</p>
                          <p>
-                            <strong>Status : </strong> 
+                            <strong>Status : </strong>
                             @if($isWFA)
                                 <span class="text-green-500">WFA</span>
                             @else
@@ -29,7 +29,7 @@
                          </div>
                      </div>
                  </div>
- 
+
                  <div>
                      <h2 class="text-2xl font-bold mb-2">Presensi</h2>
                      <div id="map" class="mb-4 rounded-lg border border-gray-300" wire:ignore></div>
@@ -49,11 +49,11 @@
                          @endif
                      </form>
                  </div>
- 
+
              </div>
          </div>
-         
- 
+
+
     </div>
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <script>
@@ -68,7 +68,7 @@
              component = @this;
              map = L.map('map').setView([{{$schedule->office->latitude}}, {{$schedule->office->longitude}}], 15);
              L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
- 
+
              const circle = L.circle(office, {
                  color: 'red',
                  fillColor: '#f03',
@@ -76,8 +76,8 @@
                  radius: radius
              }).addTo(map);
          })
-         
- 
+
+
          let accuracyCircle;
 
          function tagLocation() {
@@ -89,11 +89,11 @@
                             let accuracy = position.coords.accuracy; // Accuracy in meters
 
                             // Check for Fake GPS Usage
-                            if (accuracy < 7) {
-                                showFakeGPSWarning();
-                                component.set('insideRadius', false); // Disable check-in button
-                                return;
-                            }
+                            // if (accuracy < 7) {
+                            //     showFakeGPSWarning();
+                            //     component.set('insideRadius', false); // Disable check-in button
+                            //     return;
+                            // }
 
                             if (marker) {
                                 map.removeLayer(marker);
@@ -136,25 +136,25 @@
                 }
             }
             // Function to show Fake GPS warning
-            function showFakeGPSWarning() {
-                let existingWarning = document.getElementById("fakeGPSWarning");
-                if (existingWarning) {
-                    existingWarning.remove();
-                }
+            // function showFakeGPSWarning() {
+            //     let existingWarning = document.getElementById("fakeGPSWarning");
+            //     if (existingWarning) {
+            //         existingWarning.remove();
+            //     }
+            //
+            //     const warningDiv = document.createElement('div');
+            //     warningDiv.id = "fakeGPSWarning";
+            //     warningDiv.innerHTML = `
+            //         <div style="color: red; padding: 10px; border: 1px solid red; background-color: #fdd; text-align: center; margin-top: 10px; border-radius: 5px;">
+            //             <strong>Kamu Dicurigai Menggunakan Fake GPS, coba ulang lagi!</strong>
+            //         </div>
+            //     `;
+            //
+            //     // Insert warning above the form
+            //     const form = document.querySelector("form");
+            //     form.parentNode.insertBefore(warningDiv, form);
+            // }
 
-                const warningDiv = document.createElement('div');
-                warningDiv.id = "fakeGPSWarning";
-                warningDiv.innerHTML = `
-                    <div style="color: red; padding: 10px; border: 1px solid red; background-color: #fdd; text-align: center; margin-top: 10px; border-radius: 5px;">
-                        <strong>Kamu Dicurigai Menggunakan Fake GPS, coba ulang lagi!</strong>
-                    </div>
-                `;
-
-                // Insert warning above the form
-                const form = document.querySelector("form");
-                form.parentNode.insertBefore(warningDiv, form);
-            }
- 
          function isWithinRadius(lat, lng, center, radius) {
              const is_wfa = "{{$isWFA}}"
              if (is_wfa) {
@@ -164,12 +164,11 @@
                  let distance = map.distance([lat, lng], center);
                  return distance <= radius;
              }
-             
+
          }
- 
- 
- 
+
+
+
      </script>
- 
+
  </div>
- 
