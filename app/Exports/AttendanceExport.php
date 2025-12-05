@@ -58,7 +58,7 @@ class AttendanceExport implements FromCollection, WithHeadings, WithMapping, Sho
     public function map($record): array
     {
         return [
-            $record->start_date ? $record->start_date->format('Y-m-d') : '',
+            $record->start_date ? $record->start_date : '',
             $record->user->name ?? '',
             // isset($record->user->idnumber) ? "'".$record->user->idnumber : '',
             (string) ($record->user->idnumber ?? ''),
