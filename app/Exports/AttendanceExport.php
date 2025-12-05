@@ -27,6 +27,11 @@ class AttendanceExport implements FromCollection, WithHeadings, WithMapping, Sho
 
     public function collection()
     {
+        return collect([]);
+    }
+
+    public function getExportData()
+    {
         return Attendance::whereIn('id', $this->selectedIds)->with('user', 'position', 'dailyreports')->get();
     }
 
@@ -96,10 +101,9 @@ class AttendanceExport implements FromCollection, WithHeadings, WithMapping, Sho
     {
         if ($record->is_leave) {
             return "Cuti";
-        }
-        elseif ($record->not_present) {
+        } elseif ($record->not_present) {
             return "Tidak Hadir";
-        } else{
+        } else {
             return "Hadir";
         }
     }
@@ -150,8 +154,8 @@ class AttendanceExport implements FromCollection, WithHeadings, WithMapping, Sho
             AfterSheet::class => function (AfterSheet $event) {
                 $sheet = $event->sheet;
                 //group data by user
-                $data = $this->collection()->groupBy('user_id')
-                ->map(function ($records) {
+                $data = $this->getExportData()->groupBy('user_id')
+                    ->map(function ($records) {
                     // Sort each user's records by start_date in ascending order
                     return $records->sortBy('start_date');
                 });
@@ -167,9 +171,9 @@ class AttendanceExport implements FromCollection, WithHeadings, WithMapping, Sho
                     $sheet->getStyle("A{$row}:S{$row}")->applyFromArray([
                         'font' => ['bold' => true],
                         'fill' => [
-                            'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
-                            'startColor' => ['rgb' => 'D9E1F2'],
-                        ],
+                                'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+                                'startColor' => ['rgb' => 'D9E1F2'],
+                            ],
                     ]);
                     $row++;
 
