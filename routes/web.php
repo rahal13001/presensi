@@ -15,6 +15,14 @@ use Illuminate\Support\Facades\Route;
 Route::group(['middleware' => 'auth'], function() {
     Route::get('presensi', Presensi::class)->name('presensi');
     Route::get('shiftpresensi', Shiftpresensi::class)->name('shiftpresensi');
+
+    Route::get('/pdftugasharian/{monthlyreport}', DailytaskController::class)->name('pdftugasharian');
+    Route::get('/datapresensi/{monthlyreport}', AttendancedataController::class)->name('pdfdatapresensi');
+    Route::get('/laporanpresensi/{monthlyreport}', AttendancereportController::class)->name('pdflaporanpresensi');
+    Route::get('/laporanharian/{dailyreport}/{title}', ViewDailyReportController::class)->name('laporanharian');
+
+    Route::get('/admin/monthly-report-v2/{record}/pdf', [MonthlyReportPdfController::class, 'download'])
+        ->name('monthly-report-v2.pdf');
 });
 
 Route::get('/login', function() {
@@ -24,15 +32,3 @@ Route::get('/login', function() {
 Route::get('/', function () {
     return view('welcome');
 });
-
-Route::get('/pdftugasharian/{monthlyreport}', DailytaskController::class)->name('pdftugasharian');
-
-Route::get('/datapresensi/{monthlyreport}', AttendancedataController::class)->name('pdfdatapresensi');
-
-Route::get('/laporanpresensi/{monthlyreport}', AttendancereportController::class)->name('pdflaporanpresensi');
-
-Route::get('/laporanharian/{dailyreport}/{title}', ViewDailyReportController::class)->name('laporanharian');
-
-Route::get('/admin/monthly-report-v2/{record}/pdf', [MonthlyReportPdfController::class, 'download'])
-    ->middleware(['auth'])
-    ->name('monthly-report-v2.pdf');
