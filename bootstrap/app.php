@@ -23,7 +23,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'api-doc-access' => CheckApiDocAccess::class,
             'check-user-group' => CheckUserGroup::class
         ]);
-        
+
+        $middleware->redirectGuestsTo('/admin/login');
     })
     ->withCommands([
         // AssignCommonEmployeeShifts::class
