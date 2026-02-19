@@ -20,7 +20,7 @@ class MostLateEmployees extends BaseWidget
             ->query(
                 \App\Models\User::query()
                     ->join('attendances', 'users.id', '=', 'attendances.user_id')
-                    ->select('users.*', DB::raw('SUM(
+                    ->select('users.id', 'users.name', DB::raw('SUM(
                         CASE 
                             WHEN attendances.start_time IS NULL AND attendances.end_time IS NULL THEN 0
                             WHEN attendances.start_time IS NULL THEN 240
@@ -29,7 +29,7 @@ class MostLateEmployees extends BaseWidget
                         END
                     ) as total_late_minutes'))
                     ->whereNotNull('attendances.schedule_start_time')
-                    ->groupBy('users.id')
+                    ->groupBy('users.id', 'users.name')
             )
             ->filters([
                 // Month Filter
