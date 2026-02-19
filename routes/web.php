@@ -1,0 +1,38 @@
+<?php
+
+use App\Livewire\Presensi;
+use App\Livewire\Shiftpresensi;
+use App\Exports\AttendanceExport;
+use App\Http\Controllers\AttendancedataController;
+use App\Http\Controllers\AttendancereportController;
+use App\Http\Controllers\DailytaskController;
+use App\Http\Controllers\DocumentationController;
+use App\Http\Controllers\MonthlyReportPdfController;
+use App\Http\Controllers\ViewDailyReportController;
+use App\Http\Middleware\CheckUserGroup;
+use Illuminate\Support\Facades\Route;
+
+Route::group(['middleware' => 'auth'], function() {
+    Route::get('presensi', Presensi::class)->name('presensi');
+    Route::get('shiftpresensi', Shiftpresensi::class)->name('shiftpresensi');
+});
+
+Route::get('/login', function() {
+    return redirect('admin/login');
+})->name('login');
+
+Route::get('/', function () {
+    return view('welcome');
+});
+
+Route::get('/pdftugasharian/{monthlyreport}', DailytaskController::class)->name('pdftugasharian');
+
+Route::get('/datapresensi/{monthlyreport}', AttendancedataController::class)->name('pdfdatapresensi');
+
+Route::get('/laporanpresensi/{monthlyreport}', AttendancereportController::class)->name('pdflaporanpresensi');
+
+Route::get('/laporanharian/{dailyreport}/{title}', ViewDailyReportController::class)->name('laporanharian');
+
+Route::get('/admin/monthly-report-v2/{record}/pdf', [MonthlyReportPdfController::class, 'download'])
+    ->middleware(['auth'])
+    ->name('monthly-report-v2.pdf');
