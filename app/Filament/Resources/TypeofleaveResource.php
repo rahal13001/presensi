@@ -53,7 +53,8 @@ class TypeofleaveResource extends Resource
             ])
             ->bulkActions([
                 \Filament\Actions\BulkActionGroup::make([
-                    \Filament\Actions\DeleteBulkAction::make(),
+                    \Filament\Actions\DeleteBulkAction::make()
+                        ->visible(fn () => auth()->user()->hasAnyRole(['super_admin', 'admin'])),
                 ]),
             ]);
     }

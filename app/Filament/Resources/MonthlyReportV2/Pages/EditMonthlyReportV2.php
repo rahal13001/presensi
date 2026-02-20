@@ -35,7 +35,8 @@ class EditMonthlyReportV2 extends EditRecord
                 ->visible(fn () => $this->record->status !== 'draft')
                 ->url(fn () => route('monthly-report-v2.pdf', $this->record))
                 ->openUrlInNewTab(),
-            Actions\DeleteAction::make(),
+            Actions\DeleteAction::make()
+                ->visible(fn () => auth()->user()->hasAnyRole(['super_admin', 'admin'])),
             Actions\Action::make('submit_for_review')
                 ->label('Kirim untuk Review')
                 ->color('warning')
