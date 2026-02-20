@@ -235,7 +235,6 @@ class MonthlyReportV2Form
                                     ->minDistance(5)
                                     ->exportPenColor('#000')
                                     ->velocityFilterWeight(0.7)
-                                    ->required()
                                     ->columnSpan('full'),
                             ])->columns(2),
                     ])->columnSpan('full'),

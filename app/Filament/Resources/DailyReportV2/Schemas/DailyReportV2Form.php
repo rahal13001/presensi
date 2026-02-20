@@ -49,11 +49,13 @@ class DailyReportV2Form
     
                                 Select::make('attendance_id')
                                     ->label('Kehadiran Terkait')
-                                    ->relationship('attendance', 'start_time', function ($query) {
-                                        // Show only current user's attendances
-                                        // Ideally filter by the selected report_date too if possible, but let's keep it simple first
-                                        return $query->where('user_id', Auth::id())->orderBy('start_date', 'desc');
-                                    })
+                                    ->relationship(
+                                        name: 'attendance',
+                                        modifyQueryUsing: function ($query) {
+                                            return $query->where('user_id', Auth::id())->orderBy('start_date', 'desc');
+                                        }
+                                    )
+                                    ->getOptionLabelFromRecordUsing(fn ($record) => "{$record->start_date} - " . ($record->start_time ?? 'Belum Absen'))
                                     ->nullable()
                                     ->searchable()
                                     ->hidden($isRelationManager) // Hidden if used in Relation Manager

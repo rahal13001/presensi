@@ -82,85 +82,22 @@ class MonthlyReportV2Resource extends Resource
                                 'info' => 'reviewed',
                                 'success' => 'approved',
                             ]),
-                    ])->columns(2),
+                    ])->columns(3)
+                    ->columnSpanFull(),
                 
                 \Filament\Schemas\Components\Section::make('Ringkasan Ruang Lingkup')
                     ->schema([
-                        \Filament\Infolists\Components\TextEntry::make('scope_summary_view')
-                            ->label('Ringkasan Checklist')
-                            ->state(function ($record) {
-                                // Logic similar to Form placeholder
-                                $monthlyReport = $record;
-                                $userId = $monthlyReport->user_id;
-                                $month = $monthlyReport->month;
-                                $year = $monthlyReport->year;
-                                
-                                $dailyReports = \App\Models\DailyReportV2::with(['scopeChecks.scope', 'otherWorks.otherWorkOption'])
-                                    ->where('user_id', $userId)
-                                    ->whereMonth('report_date', $month)
-                                    ->whereYear('report_date', $year)
-                                    ->get();
-
-                                if ($dailyReports->isEmpty()) {
-                                    return 'Belum ada laporan harian untuk periode ini.';
-                                }
-
-                                $totalDays = $dailyReports->count();
-                                $scopeCounts = [];
-                                $otherWorkCounts = [];
-
-                                foreach ($dailyReports as $report) {
-                                    foreach ($report->scopeChecks as $check) {
-                                        if ($check->is_checked) {
-                                            $scopeName = $check->scope->name;
-                                            if (! isset($scopeCounts[$scopeName])) {
-                                                $scopeCounts[$scopeName] = 0;
-                                            }
-                                            $scopeCounts[$scopeName]++;
-                                        }
-                                    }
-                                    
-                                    foreach ($report->otherWorks as $work) {
-                                        $workName = $work->otherWorkOption->name ?? 'Lainnya';
-                                        if (! isset($otherWorkCounts[$workName])) {
-                                            $otherWorkCounts[$workName] = 0;
-                                        }
-                                        $otherWorkCounts[$workName]++;
-                                    }
-                                }
-                                
-                                $html = "<div class='text-sm space-y-4'>";
-                                $html .= "<div><p class='font-bold'>Total Hari Laporan: {$totalDays}</p>";
-                                $html .= "<p class='font-semibold mt-2'>Ruang Lingkup (Scope):</p>";
-                                $html .= "<ul class='list-disc pl-5'>";
-                                foreach ($scopeCounts as $name => $count) {
-                                    $html .= "<li>{$name}: <strong>{$count}/{$totalDays}</strong> hari</li>";
-                                }
-                                $html .= "</ul></div>";
-                                
-                                if (! empty($otherWorkCounts)) {
-                                    $html .= "<div><p class='font-semibold mt-2'>Pekerjaan Lain:</p>";
-                                    $html .= "<ul class='list-disc pl-5'>";
-                                    foreach ($otherWorkCounts as $name => $count) {
-                                        $html .= "<li>{$name}: <strong>{$count}</strong> kali</li>";
-                                    }
-                                    $html .= "</ul></div>";
-                                }
-                                
-                                $html .= "</div>";
-
-                                return new \Illuminate\Support\HtmlString($html);
-                            }),
-                    ]),
+                        \Filament\Infolists\Components\ViewEntry::make('scope_summary_view')
+                            ->label('')
+                            ->view('filament.resources.monthly-report-v2.scope-summary'),
+                    ])
+                    ->columnSpanFull(),
 
                 \Filament\Schemas\Components\Section::make('Foto Dokumentasi')
                     ->schema([
-                        // Display photos. 
-                        // Infolists don't have a direct "Relation Image Gallery" component easily without checking plugins.
-                        // But we can use ImageEntry with state from relationship.
                         \Filament\Infolists\Components\ImageEntry::make('photos.dailyPhoto.photo_path')
                             ->label('Foto Terpilih')
-                            ->disk('public') // Assuming public disk
+                            ->disk('public')
                             ->columns(5)
                             ->height(100)
                             ->extraImgAttributes([
@@ -169,7 +106,8 @@ class MonthlyReportV2Resource extends Resource
                             ])
                             ->url(fn ($state) => \Illuminate\Support\Facades\Storage::disk('public')->url($state))
                             ->openUrlInNewTab(),
-                    ]),
+                    ])
+                    ->columnSpanFull(),
 
                 \Filament\Schemas\Components\Section::make('Tanda Tangan')
                     ->schema([
@@ -184,7 +122,8 @@ class MonthlyReportV2Resource extends Resource
                          \Filament\Infolists\Components\TextEntry::make('employee_signed_at')
                             ->label('Ditandatangani Pada')
                             ->dateTime('d/m/Y H:i'),
-                    ])->columns(2),
+                    ])->columns(2)
+                    ->columnSpanFull(),
                 \Filament\Schemas\Components\Section::make('Review Ketua Tim')
                     ->schema([
                         \Filament\Infolists\Components\TextEntry::make('teamLeader.name')
@@ -213,6 +152,7 @@ class MonthlyReportV2Resource extends Resource
                             ->dateTime('d/m/Y H:i'),
                     ])
                     ->columns(2)
+                    ->columnSpanFull()
                     ->visible(fn ($record) => $record && $record->team_leader_id),
             ]);
     }

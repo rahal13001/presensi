@@ -45,14 +45,8 @@ class EditMonthlyReportV2 extends EditRecord
                 ->modalHeading('Kirim Laporan untuk Review')
                 ->modalDescription('Apakah Anda yakin ingin mengirim laporan ini? Anda tidak dapat mengubahnya lagi setelah dikirim.')
                 ->action(function () {
-                    if (empty($this->record->employee_sign)) {
-                        \Filament\Notifications\Notification::make()
-                            ->title('Gagal')
-                            ->body('Anda harus menandatangani laporan sebelum mengirim.')
-                            ->danger()
-                            ->send();
-                        return;
-                    }
+                    // Removed signature check as per user request
+                    // if (empty($this->record->employee_sign)) { ... }
 
                     $this->record->update([
                         'status' => 'submitted',
