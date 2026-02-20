@@ -1,108 +1,70 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Policies;
 
-use App\Models\User;
+use Illuminate\Foundation\Auth\User as AuthUser;
 use App\Models\Position;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class PositionPolicy
 {
     use HandlesAuthorization;
-
-    /**
-     * Determine whether the user can view any models.
-     */
-    public function viewAny(User $user): bool
+    
+    public function viewAny(AuthUser $authUser): bool
     {
-        return $user->can('view_any_position');
+        return $authUser->can('ViewAny:Position');
     }
 
-    /**
-     * Determine whether the user can view the model.
-     */
-    public function view(User $user, Position $position): bool
+    public function view(AuthUser $authUser, Position $position): bool
     {
-        return $user->can('view_position');
+        return $authUser->can('View:Position');
     }
 
-    /**
-     * Determine whether the user can create models.
-     */
-    public function create(User $user): bool
+    public function create(AuthUser $authUser): bool
     {
-        return $user->can('create_position');
+        return $authUser->can('Create:Position');
     }
 
-    /**
-     * Determine whether the user can update the model.
-     */
-    public function update(User $user, Position $position): bool
+    public function update(AuthUser $authUser, Position $position): bool
     {
-        return $user->can('update_position');
+        return $authUser->can('Update:Position');
     }
 
-    /**
-     * Determine whether the user can delete the model.
-     */
-    public function delete(User $user, Position $position): bool
+    public function delete(AuthUser $authUser, Position $position): bool
     {
-        return $user->can('delete_position');
+        return $authUser->can('Delete:Position');
     }
 
-    /**
-     * Determine whether the user can bulk delete.
-     */
-    public function deleteAny(User $user): bool
+    public function restore(AuthUser $authUser, Position $position): bool
     {
-        return $user->can('delete_any_position');
+        return $authUser->can('Restore:Position');
     }
 
-    /**
-     * Determine whether the user can permanently delete.
-     */
-    public function forceDelete(User $user, Position $position): bool
+    public function forceDelete(AuthUser $authUser, Position $position): bool
     {
-        return $user->can('force_delete_position');
+        return $authUser->can('ForceDelete:Position');
     }
 
-    /**
-     * Determine whether the user can permanently bulk delete.
-     */
-    public function forceDeleteAny(User $user): bool
+    public function forceDeleteAny(AuthUser $authUser): bool
     {
-        return $user->can('force_delete_any_position');
+        return $authUser->can('ForceDeleteAny:Position');
     }
 
-    /**
-     * Determine whether the user can restore.
-     */
-    public function restore(User $user, Position $position): bool
+    public function restoreAny(AuthUser $authUser): bool
     {
-        return $user->can('restore_position');
+        return $authUser->can('RestoreAny:Position');
     }
 
-    /**
-     * Determine whether the user can bulk restore.
-     */
-    public function restoreAny(User $user): bool
+    public function replicate(AuthUser $authUser, Position $position): bool
     {
-        return $user->can('restore_any_position');
+        return $authUser->can('Replicate:Position');
     }
 
-    /**
-     * Determine whether the user can replicate.
-     */
-    public function replicate(User $user, Position $position): bool
+    public function reorder(AuthUser $authUser): bool
     {
-        return $user->can('replicate_position');
+        return $authUser->can('Reorder:Position');
     }
 
-    /**
-     * Determine whether the user can reorder.
-     */
-    public function reorder(User $user): bool
-    {
-        return $user->can('reorder_position');
-    }
 }

@@ -1,108 +1,70 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Policies;
 
-use App\Models\User;
+use Illuminate\Foundation\Auth\User as AuthUser;
 use App\Models\Typeofleave;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class TypeofleavePolicy
 {
     use HandlesAuthorization;
-
-    /**
-     * Determine whether the user can view any models.
-     */
-    public function viewAny(User $user): bool
+    
+    public function viewAny(AuthUser $authUser): bool
     {
-        return $user->can('view_any_typeofleave');
+        return $authUser->can('ViewAny:Typeofleave');
     }
 
-    /**
-     * Determine whether the user can view the model.
-     */
-    public function view(User $user, Typeofleave $typeofleave): bool
+    public function view(AuthUser $authUser, Typeofleave $typeofleave): bool
     {
-        return $user->can('view_typeofleave');
+        return $authUser->can('View:Typeofleave');
     }
 
-    /**
-     * Determine whether the user can create models.
-     */
-    public function create(User $user): bool
+    public function create(AuthUser $authUser): bool
     {
-        return $user->can('create_typeofleave');
+        return $authUser->can('Create:Typeofleave');
     }
 
-    /**
-     * Determine whether the user can update the model.
-     */
-    public function update(User $user, Typeofleave $typeofleave): bool
+    public function update(AuthUser $authUser, Typeofleave $typeofleave): bool
     {
-        return $user->can('update_typeofleave');
+        return $authUser->can('Update:Typeofleave');
     }
 
-    /**
-     * Determine whether the user can delete the model.
-     */
-    public function delete(User $user, Typeofleave $typeofleave): bool
+    public function delete(AuthUser $authUser, Typeofleave $typeofleave): bool
     {
-        return $user->can('delete_typeofleave');
+        return $authUser->can('Delete:Typeofleave');
     }
 
-    /**
-     * Determine whether the user can bulk delete.
-     */
-    public function deleteAny(User $user): bool
+    public function restore(AuthUser $authUser, Typeofleave $typeofleave): bool
     {
-        return $user->can('delete_any_typeofleave');
+        return $authUser->can('Restore:Typeofleave');
     }
 
-    /**
-     * Determine whether the user can permanently delete.
-     */
-    public function forceDelete(User $user, Typeofleave $typeofleave): bool
+    public function forceDelete(AuthUser $authUser, Typeofleave $typeofleave): bool
     {
-        return $user->can('force_delete_typeofleave');
+        return $authUser->can('ForceDelete:Typeofleave');
     }
 
-    /**
-     * Determine whether the user can permanently bulk delete.
-     */
-    public function forceDeleteAny(User $user): bool
+    public function forceDeleteAny(AuthUser $authUser): bool
     {
-        return $user->can('force_delete_any_typeofleave');
+        return $authUser->can('ForceDeleteAny:Typeofleave');
     }
 
-    /**
-     * Determine whether the user can restore.
-     */
-    public function restore(User $user, Typeofleave $typeofleave): bool
+    public function restoreAny(AuthUser $authUser): bool
     {
-        return $user->can('restore_typeofleave');
+        return $authUser->can('RestoreAny:Typeofleave');
     }
 
-    /**
-     * Determine whether the user can bulk restore.
-     */
-    public function restoreAny(User $user): bool
+    public function replicate(AuthUser $authUser, Typeofleave $typeofleave): bool
     {
-        return $user->can('restore_any_typeofleave');
+        return $authUser->can('Replicate:Typeofleave');
     }
 
-    /**
-     * Determine whether the user can replicate.
-     */
-    public function replicate(User $user, Typeofleave $typeofleave): bool
+    public function reorder(AuthUser $authUser): bool
     {
-        return $user->can('replicate_typeofleave');
+        return $authUser->can('Reorder:Typeofleave');
     }
 
-    /**
-     * Determine whether the user can reorder.
-     */
-    public function reorder(User $user): bool
-    {
-        return $user->can('reorder_typeofleave');
-    }
 }

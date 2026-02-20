@@ -1,108 +1,70 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Policies;
 
-use App\Models\User;
+use Illuminate\Foundation\Auth\User as AuthUser;
 use App\Models\Monthlyreport;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class MonthlyreportPolicy
 {
     use HandlesAuthorization;
-
-    /**
-     * Determine whether the user can view any models.
-     */
-    public function viewAny(User $user): bool
+    
+    public function viewAny(AuthUser $authUser): bool
     {
-        return $user->can('view_any_monthlyreport');
+        return $authUser->can('ViewAny:Monthlyreport');
     }
 
-    /**
-     * Determine whether the user can view the model.
-     */
-    public function view(User $user, Monthlyreport $monthlyreport): bool
+    public function view(AuthUser $authUser, Monthlyreport $monthlyreport): bool
     {
-        return $user->can('view_monthlyreport');
+        return $authUser->can('View:Monthlyreport');
     }
 
-    /**
-     * Determine whether the user can create models.
-     */
-    public function create(User $user): bool
+    public function create(AuthUser $authUser): bool
     {
-        return $user->can('create_monthlyreport');
+        return $authUser->can('Create:Monthlyreport');
     }
 
-    /**
-     * Determine whether the user can update the model.
-     */
-    public function update(User $user, Monthlyreport $monthlyreport): bool
+    public function update(AuthUser $authUser, Monthlyreport $monthlyreport): bool
     {
-        return $user->can('update_monthlyreport');
+        return $authUser->can('Update:Monthlyreport');
     }
 
-    /**
-     * Determine whether the user can delete the model.
-     */
-    public function delete(User $user, Monthlyreport $monthlyreport): bool
+    public function delete(AuthUser $authUser, Monthlyreport $monthlyreport): bool
     {
-        return $user->can('delete_monthlyreport');
+        return $authUser->can('Delete:Monthlyreport');
     }
 
-    /**
-     * Determine whether the user can bulk delete.
-     */
-    public function deleteAny(User $user): bool
+    public function restore(AuthUser $authUser, Monthlyreport $monthlyreport): bool
     {
-        return $user->can('delete_any_monthlyreport');
+        return $authUser->can('Restore:Monthlyreport');
     }
 
-    /**
-     * Determine whether the user can permanently delete.
-     */
-    public function forceDelete(User $user, Monthlyreport $monthlyreport): bool
+    public function forceDelete(AuthUser $authUser, Monthlyreport $monthlyreport): bool
     {
-        return $user->can('force_delete_monthlyreport');
+        return $authUser->can('ForceDelete:Monthlyreport');
     }
 
-    /**
-     * Determine whether the user can permanently bulk delete.
-     */
-    public function forceDeleteAny(User $user): bool
+    public function forceDeleteAny(AuthUser $authUser): bool
     {
-        return $user->can('force_delete_any_monthlyreport');
+        return $authUser->can('ForceDeleteAny:Monthlyreport');
     }
 
-    /**
-     * Determine whether the user can restore.
-     */
-    public function restore(User $user, Monthlyreport $monthlyreport): bool
+    public function restoreAny(AuthUser $authUser): bool
     {
-        return $user->can('restore_monthlyreport');
+        return $authUser->can('RestoreAny:Monthlyreport');
     }
 
-    /**
-     * Determine whether the user can bulk restore.
-     */
-    public function restoreAny(User $user): bool
+    public function replicate(AuthUser $authUser, Monthlyreport $monthlyreport): bool
     {
-        return $user->can('restore_any_monthlyreport');
+        return $authUser->can('Replicate:Monthlyreport');
     }
 
-    /**
-     * Determine whether the user can replicate.
-     */
-    public function replicate(User $user, Monthlyreport $monthlyreport): bool
+    public function reorder(AuthUser $authUser): bool
     {
-        return $user->can('replicate_monthlyreport');
+        return $authUser->can('Reorder:Monthlyreport');
     }
 
-    /**
-     * Determine whether the user can reorder.
-     */
-    public function reorder(User $user): bool
-    {
-        return $user->can('reorder_monthlyreport');
-    }
 }

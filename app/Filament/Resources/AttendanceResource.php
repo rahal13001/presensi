@@ -188,13 +188,6 @@ class AttendanceResource extends Resource
                 Tables\Columns\TextColumn::make('end_time')
                     ->label('Waktu Pulang'),
                 
-                Tables\Columns\BooleanColumn::make('status')
-                    ->label('Status')
-                    ->trueIcon('heroicon-o-check-circle')   // Green check icon for true
-                    ->falseIcon('heroicon-o-x-circle')      // Red cross icon for false
-                    ->trueColor('success')                  // Green color for true
-                    ->falseColor('danger'),          // Red color for false
-                    
                 Tables\Columns\TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
@@ -280,7 +273,8 @@ class AttendanceResource extends Resource
                         return \Maatwebsite\Excel\Facades\Excel::download($export, 'attendance-' . date('Y-m-d') . '.xlsx');
                     }),
                     
-                    \Filament\Actions\DeleteBulkAction::make(),
+                    \Filament\Actions\DeleteBulkAction::make()
+                        ->visible(fn () => auth()->user()->hasAnyRole(['super_admin', 'admin'])),
 
                     
                     
