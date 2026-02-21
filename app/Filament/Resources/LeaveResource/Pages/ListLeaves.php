@@ -16,4 +16,11 @@ class ListLeaves extends ListRecords
             Actions\CreateAction::make(),
         ];
     }
+
+    protected function getHeaderWidgets(): array
+    {
+        return [
+            \App\Filament\Resources\LeaveResource\Widgets\LeaveQuotaOverview::class,
+        ];
+    }
 }

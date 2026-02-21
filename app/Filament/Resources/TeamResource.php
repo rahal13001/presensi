@@ -45,6 +45,12 @@ class TeamResource extends Resource
                                     Forms\Components\TextInput::make('team_number')
                                         ->label('Nomor Tim Kerja')
                                         ->maxLength(255),
+                                    Forms\Components\Select::make('members')
+                                        ->label('Anggota Tim')
+                                        ->relationship('members', 'name')
+                                        ->multiple()
+                                        ->preload()
+                                        ->searchable(),
                                 ])
                             ]),
                         
@@ -65,6 +71,10 @@ class TeamResource extends Resource
                 Tables\Columns\TextColumn::make('user.name')
                     ->label('Ketua Tim Kerja')
                     ->searchable(),
+                Tables\Columns\TextColumn::make('members_count')
+                    ->label('Jumlah Anggota')
+                    ->counts('members')
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

@@ -22,10 +22,38 @@ class TypeofleaveResource extends Resource
     {
         return $schema
             ->schema([
-                Forms\Components\TextInput::make('leaves_name')
-                    ->label('Jenis Cuti')
-                    ->required()
-                    ->maxLength(255),
+                \Filament\Schemas\Components\Section::make('Detail Jenis Cuti')
+                    ->schema([
+                        Forms\Components\TextInput::make('leaves_name')
+                            ->label('Jenis Cuti')
+                            ->required()
+                            ->maxLength(255),
+                        
+                        Forms\Components\Textarea::make('description')
+                            ->label('Keterangan / Aturan Pustaka')
+                            ->rows(3)
+                            ->columnSpanFull(),
+                    ]),
+                    
+                \Filament\Schemas\Components\Section::make('Pengaturan Cuti')
+                    ->columns(2)
+                    ->schema([
+                        Forms\Components\Toggle::make('has_quota')
+                            ->label('Punya Batas Kuota Tahunan')
+                            ->live(), // Add live() so it reacts immediately
+                            
+                        Forms\Components\TextInput::make('default_quota_days')
+                            ->label('Kuota Default (Hari)')
+                            ->numeric()
+                            ->required(fn ($get) => $get('has_quota') === true)
+                            ->visible(fn ($get) => $get('has_quota') === true)
+                            ->minValue(1),
+                            
+                        Forms\Components\Toggle::make('requires_attachment')
+                            ->label('Wajib Lampirkan Dokumen Pendukung')
+                            ->columnSpanFull()
+                            ->helperText('Contoh: Surat sakit dari dokter.'),
+                    ]),
             ]);
     }
 
@@ -36,6 +64,20 @@ class TypeofleaveResource extends Resource
                 Tables\Columns\TextColumn::make('leaves_name')
                     ->label('Jenis Cuti')
                     ->searchable(),
+                    
+                Tables\Columns\IconColumn::make('has_quota')
+                    ->label('Batas Kuota')
+                    ->boolean(),
+                    
+                Tables\Columns\TextColumn::make('default_quota_days')
+                    ->label('Hari Kuota')
+                    ->numeric()
+                    ->sortable()
+                    ->placeholder('-'),
+                    
+                Tables\Columns\IconColumn::make('requires_attachment')
+                    ->label('Wajib Dokumen')
+                    ->boolean(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

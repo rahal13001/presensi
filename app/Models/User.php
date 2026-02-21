@@ -95,4 +95,16 @@ class User extends Authenticatable
     {
         return $this->hasMany(MonthlyReportV2::class);
     }
+
+    // Teams the user belongs to as a MEMBER
+    public function teams(): BelongsToMany
+    {
+        return $this->belongsToMany(Team::class, 'team_user')->withTimestamps();
+    }
+
+    // Teams the user LEADS (is the kepala of)
+    public function leadingTeams(): HasMany
+    {
+        return $this->hasMany(Team::class);
+    }
 }
