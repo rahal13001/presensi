@@ -23,4 +23,21 @@ class ListLeaves extends ListRecords
             \App\Filament\Resources\LeaveResource\Widgets\LeaveQuotaOverview::class,
         ];
     }
+
+    public function getTabs(): array
+    {
+        return [
+            'all' => \Filament\Schemas\Components\Tabs\Tab::make('Semua')
+                ->badge(static::getResource()::getEloquentQuery()->count()),
+            'pending' => \Filament\Schemas\Components\Tabs\Tab::make('Menunggu')
+                ->modifyQueryUsing(fn (\Illuminate\Database\Eloquent\Builder $query) => $query->where('status', 'pending'))
+                ->badge(static::getResource()::getEloquentQuery()->where('status', 'pending')->count()),
+            'approved' => \Filament\Schemas\Components\Tabs\Tab::make('Disetujui')
+                ->modifyQueryUsing(fn (\Illuminate\Database\Eloquent\Builder $query) => $query->where('status', 'approved'))
+                ->badge(static::getResource()::getEloquentQuery()->where('status', 'approved')->count()),
+            'rejected' => \Filament\Schemas\Components\Tabs\Tab::make('Ditolak')
+                ->modifyQueryUsing(fn (\Illuminate\Database\Eloquent\Builder $query) => $query->where('status', 'rejected'))
+                ->badge(static::getResource()::getEloquentQuery()->where('status', 'rejected')->count()),
+        ];
+    }
 }

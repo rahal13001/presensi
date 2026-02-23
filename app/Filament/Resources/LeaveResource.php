@@ -174,25 +174,6 @@ class LeaveResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->modifyQueryUsing(function (Builder $query) {
-                $user = \Illuminate\Support\Facades\Auth::user();
-                if ($user->hasRole(['super_admin'])) {
-                    return $query;
-                } elseif ($user->hasRole('kepala')) {
-                    // Team leader sees their members' leaves and their own
-                    $teamMemberIds = \Illuminate\Support\Facades\DB::table('team_user')
-                        ->join('teams', 'team_user.team_id', '=', 'teams.id')
-                        ->where('teams.user_id', $user->id)
-                        ->pluck('team_user.user_id')
-                        ->toArray();
-                        
-                    $teamMemberIds[] = $user->id; // Include themselves
-                    
-                    return $query->whereIn('user_id', array_unique($teamMemberIds));
-                } else {
-                    return $query->where('user_id', $user->id);
-                }
-            })
             ->columns([
                 Tables\Columns\TextColumn::make('user.name')
                     ->label('Pegawai')
@@ -364,6 +345,30 @@ class LeaveResource extends Resource
     public static function getNavigationGroup(): string | null
     {
         return 'Attendance Management';
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        $query = parent::getEloquentQuery();
+        $user = \Illuminate\Support\Facades\Auth::user();
+        
+        // Super admin and users with access to Leave Quotas can view all leaves
+        if ($user && ($user->hasRole(['super_admin']) || $user->can('viewAny', \App\Models\LeaveQuota::class))) {
+            return $query;
+        } elseif ($user && $user->hasRole('kepala')) {
+            // Team leader sees their members' leaves and their own
+            $teamMemberIds = \Illuminate\Support\Facades\DB::table('team_user')
+                ->join('teams', 'team_user.team_id', '=', 'teams.id')
+                ->where('teams.user_id', $user->id)
+                ->pluck('team_user.user_id')
+                ->toArray();
+                
+            $teamMemberIds[] = $user->id; // Include themselves
+            
+            return $query->whereIn('user_id', array_unique($teamMemberIds));
+        } else {
+            return $query->where('user_id', $user ? $user->id : 0);
+        }
     }
 
     public static function getNavigationIcon(): string | null
