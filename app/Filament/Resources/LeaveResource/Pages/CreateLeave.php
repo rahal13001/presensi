@@ -63,7 +63,7 @@ class CreateLeave extends CreateRecord
         // If created directly with approved status, deduct quota immediately
         if ($leave->status === 'approved') {
             \App\Models\Leave::deductQuota($leave->user_id, $leave->typeofleave_id, $leave->start_date, $leave->end_date);
-            \App\Models\Leave::markAttendance($leave->user_id, $leave->start_date, $leave->end_date);
+            \App\Models\Leave::markAttendance($leave->user_id, $leave->typeofleave_id, $leave->start_date, $leave->end_date);
         }
         
         // Find team leaders for the employee's teams

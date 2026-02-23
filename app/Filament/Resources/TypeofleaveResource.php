@@ -53,6 +53,12 @@ class TypeofleaveResource extends Resource
                             ->label('Wajib Lampirkan Dokumen Pendukung')
                             ->columnSpanFull()
                             ->helperText('Contoh: Surat sakit dari dokter.'),
+                            
+                        Forms\Components\Toggle::make('is_working_days_only')
+                            ->label('Hanya Hitung Hari Kerja')
+                            ->default(true)
+                            ->columnSpanFull()
+                            ->helperText('Jika aktif, libur nasional dan akhir pekan tidak dihitung memotong cuti (misal: Cuti Tahunan). Jika tidak, memotong sesuai kalender (misal: Sakit).'),
                     ]),
             ]);
     }
@@ -77,6 +83,10 @@ class TypeofleaveResource extends Resource
                     
                 Tables\Columns\IconColumn::make('requires_attachment')
                     ->label('Wajib Dokumen')
+                    ->boolean(),
+                    
+                Tables\Columns\IconColumn::make('is_working_days_only')
+                    ->label('Hanya Hari Kerja')
                     ->boolean(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()

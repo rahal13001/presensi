@@ -230,10 +230,11 @@ class LeaveResource extends Resource
                         Forms\Components\Select::make('approved_by_name')
                             ->label('Disetujui Oleh')
                             ->options(function () {
-                                return \App\Models\User::role('kepala')->pluck('name', 'name');
+                                return \App\Models\User::role(['kepala', 'super_admin'])->pluck('name', 'name');
                             })
                             ->searchable()
-                            ->visible(fn () => auth()->user()->hasRole('super_admin'))
+                            ->default(fn () => auth()->user()->name)
+                            ->disabled(fn () => !auth()->user()->hasRole('super_admin'))
                     ])
                     ->action(function (\App\Models\Leave $record, array $data) {
                         $record->update([
@@ -245,7 +246,7 @@ class LeaveResource extends Resource
                         
                         // Explicitly deduct quota and mark attendance
                         \App\Models\Leave::deductQuota($record->user_id, $record->typeofleave_id, $record->start_date, $record->end_date);
-                        \App\Models\Leave::markAttendance($record->user_id, $record->start_date, $record->end_date);
+                        \App\Models\Leave::markAttendance($record->user_id, $record->typeofleave_id, $record->start_date, $record->end_date);
                         
                         Notification::make()
                             ->title('Cuti Disetujui')
@@ -266,16 +267,17 @@ class LeaveResource extends Resource
                         Forms\Components\Select::make('approved_by_name')
                             ->label('Ditolak Oleh')
                             ->options(function () {
-                                return \App\Models\User::role('kepala')->pluck('name', 'name');
+                                return \App\Models\User::role(['kepala', 'super_admin'])->pluck('name', 'name');
                             })
                             ->searchable()
-                            ->visible(fn () => auth()->user()->hasRole('super_admin'))
+                            ->default(fn () => auth()->user()->name)
+                            ->disabled(fn () => !auth()->user()->hasRole('super_admin'))
                     ])
                     ->action(function (\App\Models\Leave $record, array $data) {
                         // If previously approved, refund quota first
                         if ($record->getOriginal('status') === 'approved') {
                             \App\Models\Leave::refundQuota($record->user_id, $record->typeofleave_id, $record->start_date, $record->end_date);
-                            \App\Models\Leave::unmarkAttendance($record->user_id, $record->start_date, $record->end_date);
+                            \App\Models\Leave::unmarkAttendance($record->user_id, $record->typeofleave_id, $record->start_date, $record->end_date);
                         }
                         
                         $record->update([

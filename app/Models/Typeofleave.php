@@ -11,6 +11,7 @@ class Typeofleave extends Model
         'has_quota',
         'default_quota_days',
         'requires_attachment',
+        'is_working_days_only',
         'description',
     ];
 
@@ -19,6 +20,7 @@ class Typeofleave extends Model
         return [
             'has_quota' => 'boolean',
             'requires_attachment' => 'boolean',
+            'is_working_days_only' => 'boolean',
         ];
     }
 }

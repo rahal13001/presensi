@@ -37,6 +37,36 @@ class Leave extends Model
     // ─── Quota Helpers (called explicitly from action handlers) ──────
 
     /**
+     * Helper to calculate actual leave days based on working days and holidays.
+     */
+    public static function calculateActualLeaveDays(int $typeofleaveId, $startDate, $endDate): int
+    {
+        $type = Typeofleave::find($typeofleaveId);
+        $start = Carbon::parse($startDate);
+        $end = Carbon::parse($endDate);
+
+        if (!$type || !$type->has_quota || !$type->is_working_days_only) {
+            return $start->diffInDays($end) + 1;
+        }
+
+        $days = 0;
+        $period = \Carbon\CarbonPeriod::create($start, $end);
+        $holidays = \App\Models\Holiday::whereBetween('date', [$start->format('Y-m-d'), $end->format('Y-m-d')])->pluck('date')->toArray();
+
+        foreach ($period as $date) {
+            if ($date->isWeekend()) {
+                continue;
+            }
+            if (in_array($date->format('Y-m-d'), $holidays)) {
+                continue;
+            }
+            $days++;
+        }
+
+        return $days;
+    }
+
+    /**
      * Deduct quota for the given user/type/dates.
      */
     public static function deductQuota(int $userId, int $typeofleaveId, $startDate, $endDate): void
@@ -45,7 +75,7 @@ class Leave extends Model
         if (!$type || !$type->has_quota) return;
 
         $year = Carbon::parse($startDate)->year;
-        $days = Carbon::parse($startDate)->diffInDays(Carbon::parse($endDate)) + 1;
+        $days = self::calculateActualLeaveDays($typeofleaveId, $startDate, $endDate);
 
         $quota = LeaveQuota::where('user_id', $userId)
             ->where('typeofleave_id', $typeofleaveId)
@@ -66,7 +96,7 @@ class Leave extends Model
         if (!$type || !$type->has_quota) return;
 
         $year = Carbon::parse($startDate)->year;
-        $days = Carbon::parse($startDate)->diffInDays(Carbon::parse($endDate)) + 1;
+        $days = self::calculateActualLeaveDays($typeofleaveId, $startDate, $endDate);
 
         $quota = LeaveQuota::where('user_id', $userId)
             ->where('typeofleave_id', $typeofleaveId)
@@ -85,33 +115,65 @@ class Leave extends Model
     /**
      * Mark attendance records as leave.
      */
-    public static function markAttendance(int $userId, $startDate, $endDate): void
+    public static function markAttendance(int $userId, int $typeofleaveId, $startDate, $endDate): void
     {
+        $type = Typeofleave::find($typeofleaveId);
         $dates = [];
         $period = \Carbon\CarbonPeriod::create($startDate, $endDate);
+        
+        $holidays = [];
+        if ($type && $type->is_working_days_only) {
+            $startFormatted = Carbon::parse($startDate)->format('Y-m-d');
+            $endFormatted = Carbon::parse($endDate)->format('Y-m-d');
+            $holidays = \App\Models\Holiday::whereBetween('date', [$startFormatted, $endFormatted])->pluck('date')->toArray();
+        }
+
         foreach ($period as $date) {
+            if ($type && $type->is_working_days_only) {
+                if ($date->isWeekend() || in_array($date->format('Y-m-d'), $holidays)) {
+                    continue;
+                }
+            }
             $dates[] = $date->format('Y-m-d');
         }
 
-        Attendance::where('user_id', $userId)
-            ->whereIn(\Illuminate\Support\Facades\DB::raw('DATE(start_time)'), $dates)
-            ->update(['is_leave' => true]);
+        if (count($dates) > 0) {
+            Attendance::where('user_id', $userId)
+                ->whereIn(\Illuminate\Support\Facades\DB::raw('DATE(start_time)'), $dates)
+                ->update(['is_leave' => true]);
+        }
     }
 
     /**
      * Unmark attendance records as leave.
      */
-    public static function unmarkAttendance(int $userId, $startDate, $endDate): void
+    public static function unmarkAttendance(int $userId, int $typeofleaveId, $startDate, $endDate): void
     {
+        $type = Typeofleave::find($typeofleaveId);
         $dates = [];
         $period = \Carbon\CarbonPeriod::create($startDate, $endDate);
+        
+        $holidays = [];
+        if ($type && $type->is_working_days_only) {
+            $startFormatted = Carbon::parse($startDate)->format('Y-m-d');
+            $endFormatted = Carbon::parse($endDate)->format('Y-m-d');
+            $holidays = \App\Models\Holiday::whereBetween('date', [$startFormatted, $endFormatted])->pluck('date')->toArray();
+        }
+
         foreach ($period as $date) {
+            if ($type && $type->is_working_days_only) {
+                if ($date->isWeekend() || in_array($date->format('Y-m-d'), $holidays)) {
+                    continue;
+                }
+            }
             $dates[] = $date->format('Y-m-d');
         }
 
-        Attendance::where('user_id', $userId)
-            ->whereIn(\Illuminate\Support\Facades\DB::raw('DATE(start_time)'), $dates)
-            ->update(['is_leave' => false]);
+        if (count($dates) > 0) {
+            Attendance::where('user_id', $userId)
+                ->whereIn(\Illuminate\Support\Facades\DB::raw('DATE(start_time)'), $dates)
+                ->update(['is_leave' => false]);
+        }
     }
 
     // ─── Relationships ──────────────────────────────────────────────────
@@ -129,13 +191,10 @@ class Leave extends Model
     // Helper to calculate total calendar days for the leave
     public function leaveDays(): int
     {
-        if (!$this->start_date || !$this->end_date) {
+        if (!$this->start_date || !$this->end_date || !$this->typeofleave_id) {
             return 0;
         }
 
-        $start = Carbon::parse($this->start_date);
-        $end = Carbon::parse($this->end_date);
-
-        return $start->diffInDays($end) + 1;
+        return self::calculateActualLeaveDays($this->typeofleave_id, $this->start_date, $this->end_date);
     }
 }

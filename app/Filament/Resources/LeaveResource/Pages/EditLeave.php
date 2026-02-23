@@ -35,13 +35,13 @@ class EditLeave extends EditRecord
         // CASE 1: Status changed FROM approved → REFUND old quota
         if ($this->originalStatus === 'approved' && $newStatus !== 'approved') {
             \App\Models\Leave::refundQuota($this->originalUserId, $this->originalTypeofleaveId, $this->originalStartDate, $this->originalEndDate);
-            \App\Models\Leave::unmarkAttendance($this->originalUserId, $this->originalStartDate, $this->originalEndDate);
+            \App\Models\Leave::unmarkAttendance($this->originalUserId, $this->originalTypeofleaveId, $this->originalStartDate, $this->originalEndDate);
         }
 
         // CASE 2: Status changed TO approved → DEDUCT new quota
         if ($this->originalStatus !== 'approved' && $newStatus === 'approved') {
             \App\Models\Leave::deductQuota($record->user_id, $record->typeofleave_id, $record->start_date, $record->end_date);
-            \App\Models\Leave::markAttendance($record->user_id, $record->start_date, $record->end_date);
+            \App\Models\Leave::markAttendance($record->user_id, $record->typeofleave_id, $record->start_date, $record->end_date);
         }
 
         // CASE 3: Status remains approved but user/type/dates changed → REFUND old, DEDUCT new
@@ -54,10 +54,10 @@ class EditLeave extends EditRecord
             if ($changed) {
                 // Refund old
                 \App\Models\Leave::refundQuota($this->originalUserId, $this->originalTypeofleaveId, $this->originalStartDate, $this->originalEndDate);
-                \App\Models\Leave::unmarkAttendance($this->originalUserId, $this->originalStartDate, $this->originalEndDate);
+                \App\Models\Leave::unmarkAttendance($this->originalUserId, $this->originalTypeofleaveId, $this->originalStartDate, $this->originalEndDate);
                 // Deduct new
                 \App\Models\Leave::deductQuota($record->user_id, $record->typeofleave_id, $record->start_date, $record->end_date);
-                \App\Models\Leave::markAttendance($record->user_id, $record->start_date, $record->end_date);
+                \App\Models\Leave::markAttendance($record->user_id, $record->typeofleave_id, $record->start_date, $record->end_date);
             }
         }
     }
@@ -77,10 +77,11 @@ class EditLeave extends EditRecord
                     \Filament\Forms\Components\Select::make('approved_by_name')
                         ->label('Disetujui Oleh')
                         ->options(function () {
-                            return \App\Models\User::role('kepala')->pluck('name', 'name');
+                            return \App\Models\User::role(['kepala', 'super_admin'])->pluck('name', 'name');
                         })
                         ->searchable()
-                        ->visible(fn () => auth()->user()->hasRole('super_admin'))
+                        ->default(fn () => auth()->user()->name)
+                        ->disabled(fn () => !auth()->user()->hasRole('super_admin'))
                 ])
                 ->action(function (\App\Models\Leave $record, array $data) {
                     $record->update([
@@ -92,7 +93,7 @@ class EditLeave extends EditRecord
                     
                     // Explicitly deduct quota and mark attendance
                     \App\Models\Leave::deductQuota($record->user_id, $record->typeofleave_id, $record->start_date, $record->end_date);
-                    \App\Models\Leave::markAttendance($record->user_id, $record->start_date, $record->end_date);
+                    \App\Models\Leave::markAttendance($record->user_id, $record->typeofleave_id, $record->start_date, $record->end_date);
                     
                     \Filament\Notifications\Notification::make()
                         ->title('Cuti Anda Disetujui')
@@ -116,16 +117,17 @@ class EditLeave extends EditRecord
                     \Filament\Forms\Components\Select::make('approved_by_name')
                         ->label('Ditolak Oleh')
                         ->options(function () {
-                            return \App\Models\User::role('kepala')->pluck('name', 'name');
+                            return \App\Models\User::role(['kepala', 'super_admin'])->pluck('name', 'name');
                         })
                         ->searchable()
-                        ->visible(fn () => auth()->user()->hasRole('super_admin'))
+                        ->default(fn () => auth()->user()->name)
+                        ->disabled(fn () => !auth()->user()->hasRole('super_admin'))
                 ])
                 ->action(function (\App\Models\Leave $record, array $data) {
                     // If previously approved, refund quota first
                     if ($record->getOriginal('status') === 'approved') {
                         \App\Models\Leave::refundQuota($record->user_id, $record->typeofleave_id, $record->start_date, $record->end_date);
-                        \App\Models\Leave::unmarkAttendance($record->user_id, $record->start_date, $record->end_date);
+                        \App\Models\Leave::unmarkAttendance($record->user_id, $record->typeofleave_id, $record->start_date, $record->end_date);
                     }
                     
                     $record->update([
@@ -149,7 +151,7 @@ class EditLeave extends EditRecord
                 ->before(function (\App\Models\Leave $record) {
                     if ($record->status === 'approved') {
                         \App\Models\Leave::refundQuota($record->user_id, $record->typeofleave_id, $record->start_date, $record->end_date);
-                        \App\Models\Leave::unmarkAttendance($record->user_id, $record->start_date, $record->end_date);
+                        \App\Models\Leave::unmarkAttendance($record->user_id, $record->typeofleave_id, $record->start_date, $record->end_date);
                     }
                 }),
         ];
