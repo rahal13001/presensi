@@ -75,10 +75,23 @@ class User extends Authenticatable
         $this->attributes['idnumber'] = Crypt::encryptString($value);
     }
     
-        // Decrypt the ID number when accessing it
+    // Decrypt the ID number when accessing it
     public function getIdNumberAttribute($value)
     {
-        return is_null($value) ? null : Crypt::decryptString($value);
+        if (is_null($value)) {
+            return null;
+        }
+
+        try {
+            return Crypt::decryptString($value);
+        } catch (\Illuminate\Contracts\Encryption\DecryptException $e) {
+            // Check if it's a Laravel encrypted payload (base64 JSON starts with eyJ)
+            if (str_starts_with($value, 'eyJ')) {
+                return '[Data tidak dapat dibaca]';
+            }
+            // Otherwise, it might be an old unencrypted legacy NIK
+            return $value;
+        }
     }
 
     public function scopes(): BelongsToMany

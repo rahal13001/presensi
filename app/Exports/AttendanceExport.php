@@ -58,7 +58,7 @@ class AttendanceExport implements FromCollection, WithHeadings, WithMapping, Sho
     public function map($record): array
     {
         return [
-            $record->created_at ? $record->created_at->format('Y-m-d') : '',
+            $record->start_date ? Carbon::parse($record->start_date)->format('Y-m-d') : '',
             $record->user->name ?? '',
             // isset($record->user->idnumber) ? "'".$record->user->idnumber : '',
             (string) ($record->user->idnumber ?? ''),
@@ -152,8 +152,8 @@ class AttendanceExport implements FromCollection, WithHeadings, WithMapping, Sho
                 //group data by user
                 $data = $this->collection()->groupBy('user_id')
                 ->map(function ($records) {
-                    // Sort each user's records by created_at in ascending order
-                    return $records->sortBy('created_at');
+                    // Sort each user's records by start_date in ascending order
+                    return $records->sortBy('start_date');
                 });
 
 
