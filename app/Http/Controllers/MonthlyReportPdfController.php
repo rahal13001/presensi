@@ -166,17 +166,12 @@ class MonthlyReportPdfController extends Controller
             if ($photo->dailyPhoto && $photo->dailyPhoto->photo_path) {
                 $photoPath = storage_path('app/public/' . $photo->dailyPhoto->photo_path);
                 if (file_exists($photoPath)) {
-                    $ext = pathinfo($photoPath, PATHINFO_EXTENSION);
-                    $mime = match (strtolower($ext)) {
-                        'jpg', 'jpeg' => 'image/jpeg',
-                        'png'         => 'image/png',
-                        'gif'         => 'image/gif',
-                        'webp'        => 'image/webp',
-                        default       => 'image/jpeg',
-                    };
+                    // Fix EXIF orientation — phone cameras embed rotation metadata
+                    // that DomPDF ignores, causing portrait photos to appear rotated
+                    $imageData = $this->fixExifOrientation($photoPath);
                     $photoData[] = [
-                        'base64' => base64_encode(file_get_contents($photoPath)),
-                        'mime'   => $mime,
+                        'base64'  => $imageData['base64'],
+                        'mime'    => $imageData['mime'],
                         'caption' => $photo->dailyPhoto->caption ?? '',
                     ];
                 }
@@ -262,5 +257,78 @@ class MonthlyReportPdfController extends Controller
             'Content-Type'        => 'application/pdf',
             'Content-Disposition' => "attachment; filename=\"{$filename}\"",
         ]);
+    }
+
+    /**
+     * Read EXIF orientation from a photo and rotate it accordingly using GD.
+     * Phone cameras store photos with EXIF metadata indicating rotation,
+     * but DomPDF ignores this, causing images to appear rotated in the PDF.
+     *
+     * @param string $filePath Absolute path to the image file
+     * @return array{base64: string, mime: string}
+     */
+    private function fixExifOrientation(string $filePath): array
+    {
+        $ext = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
+
+        // Only JPEG files have EXIF orientation data
+        if (!in_array($ext, ['jpg', 'jpeg'])) {
+            $mime = match ($ext) {
+                'png'  => 'image/png',
+                'gif'  => 'image/gif',
+                'webp' => 'image/webp',
+                default => 'image/jpeg',
+            };
+            return [
+                'base64' => base64_encode(file_get_contents($filePath)),
+                'mime'   => $mime,
+            ];
+        }
+
+        // Read EXIF data
+        $exif = @exif_read_data($filePath);
+        $orientation = $exif['Orientation'] ?? 1;
+
+        // If orientation is normal (1), no processing needed
+        if ($orientation === 1) {
+            return [
+                'base64' => base64_encode(file_get_contents($filePath)),
+                'mime'   => 'image/jpeg',
+            ];
+        }
+
+        // Load image with GD
+        $image = @imagecreatefromjpeg($filePath);
+        if (!$image) {
+            // Fallback: return raw bytes if GD fails
+            return [
+                'base64' => base64_encode(file_get_contents($filePath)),
+                'mime'   => 'image/jpeg',
+            ];
+        }
+
+        // Apply rotation/flip based on EXIF orientation
+        // See: https://exiftool.org/TagNames/EXIF.html (Orientation)
+        $image = match ($orientation) {
+            2 => tap($image, fn ($img) => imageflip($img, IMG_FLIP_HORIZONTAL)),
+            3 => imagerotate($image, 180, 0),
+            4 => tap($image, fn ($img) => imageflip($img, IMG_FLIP_VERTICAL)),
+            5 => tap(imagerotate($image, -90, 0), fn ($img) => imageflip($img, IMG_FLIP_HORIZONTAL)),
+            6 => imagerotate($image, -90, 0),
+            7 => tap(imagerotate($image, 90, 0), fn ($img) => imageflip($img, IMG_FLIP_HORIZONTAL)),
+            8 => imagerotate($image, 90, 0),
+            default => $image,
+        };
+
+        // Output rotated image to buffer as JPEG
+        ob_start();
+        imagejpeg($image, null, 90);
+        $rotatedData = ob_get_clean();
+        imagedestroy($image);
+
+        return [
+            'base64' => base64_encode($rotatedData),
+            'mime'   => 'image/jpeg',
+        ];
     }
 }

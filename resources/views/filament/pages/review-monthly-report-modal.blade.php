@@ -11,7 +11,7 @@
         <div>
             <div class="text-sm font-semibold text-gray-500" style="font-size: 0.875rem; font-weight: 600; color: #6b7280;">Periode</div>
             <div class="text-lg" style="font-size: 1.125rem; line-height: 1.75rem;">
-                {{ \Carbon\Carbon::create()->month($record->month)->translatedFormat('F') }} {{ $record->year }}
+                {{ \Carbon\Carbon::create()->month((int) $record->month)->translatedFormat('F') }} {{ $record->year }}
             </div>
         </div>
         <div>
