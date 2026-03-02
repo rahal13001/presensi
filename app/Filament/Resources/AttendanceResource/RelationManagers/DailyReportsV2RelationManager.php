@@ -34,7 +34,7 @@ class DailyReportsV2RelationManager extends RelationManager
             ->columns([
                 Tables\Columns\TextColumn::make('report_date')
                     ->label('Tanggal')
-                    ->date('d M Y')
+                    ->formatStateUsing(fn ($state) => $state ? \Carbon\Carbon::parse($state)->locale('id')->translatedFormat('l, d M Y') : null)
                     ->sortable(),
                 Tables\Columns\TextColumn::make('scope_checks_count')
                     ->label('Ruang Lingkup')

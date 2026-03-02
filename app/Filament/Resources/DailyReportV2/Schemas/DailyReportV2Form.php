@@ -27,8 +27,23 @@ class DailyReportV2Form
                     ->schema([
                         Section::make('Info Laporan')
                             ->schema([
+                                \Filament\Forms\Components\TextInput::make('report_date_display')
+                                    ->label('Tanggal Laporan')
+                                    ->formatStateUsing(function ($state, $livewire, $record) use ($isRelationManager) {
+                                        if ($isRelationManager) {
+                                            $date = $record ? $record->report_date : ($livewire->getOwnerRecord()->start_date ?? now());
+                                            return \Carbon\Carbon::parse($date)->locale('id')->translatedFormat('l, d F Y');
+                                        }
+                                        return $state;
+                                    })
+                                    ->disabled()
+                                    ->dehydrated(false)
+                                    ->visible($isRelationManager),
+
                                 DatePicker::make('report_date')
                                     ->label('Tanggal Laporan')
+                                    ->displayFormat('l, d F Y')
+                                    ->native(false)
                                     ->required()
                                     ->default(function ($livewire) use ($isRelationManager) {
                                         if ($isRelationManager && method_exists($livewire, 'getOwnerRecord')) {
@@ -37,7 +52,7 @@ class DailyReportV2Form
                                         return now();
                                     })
                                     ->maxDate(now())
-                                    ->disabled($isRelationManager)
+                                    ->visible(! $isRelationManager)
                                     ->dehydrated()
                                     // Unique per user per day validation is handled in database and backend rules,
                                     // but we can add a custom rule here if needed, or rely on model constraints.

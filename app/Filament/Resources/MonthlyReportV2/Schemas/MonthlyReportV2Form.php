@@ -15,7 +15,7 @@ use Filament\Forms\Components\ViewField;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\HtmlString;
-use Saade\FilamentAutograph\Forms\Components\SignaturePad;
+use App\Forms\Components\SignatureField;
 
 class MonthlyReportV2Form
 {
@@ -260,15 +260,12 @@ class MonthlyReportV2Form
                                     ->default(now())
                                     ->required()
                                     ->native(false),
-                                SignaturePad::make('employee_sign')
+                                SignatureField::make('employee_sign')
                                     ->label('Tanda Tangan Pegawai')
-                                    ->dotSize(2.0)
-                                    ->lineMinWidth(0.5)
-                                    ->lineMaxWidth(2.5)
-                                    ->throttle(16)
-                                    ->minDistance(5)
-                                    ->exportPenColor('#000')
-                                    ->velocityFilterWeight(0.7)
+                                    ->penColor('#000')
+                                    ->lineWidth(3.5)
+                                    ->canvasHeight(200)
+                                    ->required()
                                     ->columnSpan('full'),
                             ])->columns(2),
                     ])->columnSpan('full'),

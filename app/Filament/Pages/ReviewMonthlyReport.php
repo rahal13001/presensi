@@ -9,9 +9,7 @@ use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Actions\Action;
-use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\Radio;
-use Saade\FilamentAutograph\Forms\Components\SignaturePad;
+use App\Filament\Pages\ReviewMonthlyReportForm;
 use Illuminate\Support\Facades\Auth;
 use Filament\Notifications\Notification;
 use Illuminate\Database\Eloquent\Builder;
@@ -112,49 +110,8 @@ class ReviewMonthlyReport extends Page implements HasTable
                 Action::make('review')
                     ->label('Review')
                     ->icon('heroicon-o-pencil-square')
-                    ->modalHeading('Review Laporan Bulanan')
-                    ->modalWidth('7xl')
-                    ->modalContent(fn (MonthlyReportV2 $record) => view('filament.pages.review-monthly-report-modal', ['record' => $record]))
                     ->visible(fn (MonthlyReportV2 $record) => $record->status === 'submitted')
-                    ->form([
-                        Radio::make('condition_status')
-                            ->label('Kondisi Umum')
-                            ->options([
-                                'baik' => 'Baik (Good)',
-                                'rusak' => 'Rusak (Damaged)',
-                                'permasalahan' => 'Ada Permasalahan (Issues Found)',
-                            ])
-                            ->required(),
-                        Textarea::make('leader_notes')
-                            ->label('Catatan Ketua Tim')
-                            ->rows(3),
-                        SignaturePad::make('leader_sign')
-                            ->label('Tanda Tangan Ketua Tim')
-                            ->dotSize(2.0)
-                            ->lineMinWidth(0.5)
-                            ->lineMaxWidth(2.5)
-                            ->throttle(16)
-                            ->minDistance(5)
-                            ->exportPenColor('#000') // Black color
-                            ->velocityFilterWeight(0.7)
-                            ->required(),
-                    ])
-                    ->action(function (MonthlyReportV2 $record, array $data) {
-                        $record->update([
-                            'team_leader_id' => Auth::id(),
-                            'condition_status' => $data['condition_status'],
-                            'leader_notes' => $data['leader_notes'],
-                            'leader_sign' => $data['leader_sign'],
-                            'leader_signed_at' => now(),
-                            'status' => 'approved',
-                        ]);
-
-                        Notification::make()
-                            ->title('Laporan Disetujui')
-                            ->success()
-                            ->send();
-                    })
-                    ->modalSubmitActionLabel('Setujui Laporan'),
+                    ->url(fn (MonthlyReportV2 $record) => ReviewMonthlyReportForm::getUrl() . '?id=' . $record->id),
                 
                 Action::make('view_approved')
                     ->label('Lihat Detail')

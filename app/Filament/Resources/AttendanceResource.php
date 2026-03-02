@@ -151,12 +151,13 @@ class AttendanceResource extends Resource
                     $query->where('attendances.user_id', Auth::user()->id);
                 }
                 
+                $query->withExists('dailyReportsV2');
             })
             ->paginated([10, 25, 50, 100])
             ->columns([
                 Tables\Columns\TextColumn::make('start_date')
                     ->label('Tanggal')
-                    ->date()
+                    ->formatStateUsing(fn ($state) => $state ? \Carbon\Carbon::parse($state)->locale('id')->translatedFormat('l, d M Y') : null)
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('user.name')
@@ -254,6 +255,8 @@ class AttendanceResource extends Resource
                 \Filament\Actions\EditAction::make(),
                 RelationManagerAction::make('dailyreports-relation-manager')
                     ->label('Laporan')
+                    ->icon(fn (Attendance $record): string => $record->daily_reports_v2_exists ? 'heroicon-o-check-circle' : 'heroicon-o-x-circle')
+                    ->color(fn (Attendance $record): string => $record->daily_reports_v2_exists ? 'success' : 'danger')
                     ->relationManager(RelationManagers\DailyReportsV2RelationManager::class),
             ])
             ->bulkActions([

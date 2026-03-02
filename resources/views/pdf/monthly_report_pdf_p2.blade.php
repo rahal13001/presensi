@@ -137,37 +137,37 @@
 {{-- Signature Block --}}
 <div style="page-break-inside: avoid;">
     <div style="margin-top: 25px;">
-        <p style="text-align: right; font-size: 11px;">{{ $city }}, {{ $signDay }} {{ $signMonthName }} {{ $signYear }}</p>
+        <p style="text-align: right; font-size: 11px; margin-right: 10px;">{{ $city }}, {{ $signDay }} {{ $signMonthName }} {{ $signYear }}</p>
     </div>
 
 <table class="signature-table">
     <tr>
-        <td>&nbsp;</td>
+        <td style="text-align: center;">&nbsp;</td>
         <td style="text-align: center;">
             <p>Mengetahui,</p>
-            <p style="font-weight: bold;">Ketua Tim Kerja {{ $teamName }}</p>
+            <p style="font-weight: bold; word-wrap: break-word;">Ketua Tim Kerja<br>{{ $teamName }}</p>
         </td>
     </tr>
     <tr>
-        <td style="height: 90px; text-align: center; vertical-align: bottom;">
+        <td style="height: 110px; text-align: center; vertical-align: bottom;">
             @if($employeeSign)
-                <img src="{{ $employeeSign }}" style="height: 80px;">
+                <img src="{{ $employeeSign }}" style="max-height: 100px; max-width: 240px;">
             @endif
         </td>
-        <td style="height: 90px; text-align: center; vertical-align: bottom;">
+        <td style="height: 110px; text-align: center; vertical-align: bottom;">
             @if($leaderSign)
-                <img src="{{ $leaderSign }}" style="height: 80px;">
+                <img src="{{ $leaderSign }}" style="max-height: 100px; max-width: 240px;">
             @else
-                <div style="height: 80px;">&nbsp;</div>
+                <div style="height: 100px;">&nbsp;</div>
             @endif
         </td>
     </tr>
     <tr>
-        <td>
+        <td style="text-align: center;">
             <p>{{ $report->user->name }}</p>
             <div class="sig-line"></div>
         </td>
-        <td>
+        <td style="text-align: center;">
             <p>{{ $teamLeaderName }}</p>
             <div class="sig-line"></div>
         </td>
