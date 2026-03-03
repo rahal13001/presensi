@@ -64,9 +64,10 @@ class DailyReportsV2RelationManager extends RelationManager
                         unset($data['other_works']);
                         unset($data['photos']);
 
-                        // 2. Set user_id and attendance_id
+                        // 2. Set user_id, attendance_id, and report_date
                         // Inherit from attendance owner
                         $data['user_id'] = $attendance->user_id;
+                        $data['report_date'] = $data['report_date'] ?? $attendance->start_date;
                         // attendance_id is automatically handled by the relationship ->create call?
                         // $relationship->create($data) sets attendance_id automatically.
 
